@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل سرپرست واحد - سامانه آوان</title>
+    <script src="/static/js/header.js"></script>
+	<style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+            background: linear-gradient(135deg, #e8ecf2 0%, #dce2ea 100%);
+            min-height: 100vh;
+        }
+		.main-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white;
+    padding: 0 32px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.logo {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: white;
+}
+
+.logo span {
+    color: #f59e0b;
+}
+
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-info {
+    text-align: left;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: white;
+}
+
+.user-datetime {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+.btn-logout {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    padding: 8px 20px;
+    text-decoration: none;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-logout:hover {
+    background: #ef4444 !important;
+    transform: translateY(-2px);
+    font-weight: 600 !important;
+}
+        .nav-links { display: flex; gap: 16px; margin-bottom: 24px; background: white; padding: 12px 20px; border-radius: 16px; }
+        .nav-link { padding: 8px 20px; border-radius: 40px; text-decoration: none; color: #475569; font-weight: 500; }
+        .nav-link:hover { background: #f1f5f9; }
+        .nav-link.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        .smart-header { background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 24px; padding: 24px 32px; margin-bottom: 32px; color: white; position: relative; overflow: hidden; }
+        .smart-header::before { content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: pulse 8s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.1); opacity: 0.5; } }
+        .welcome-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+        .header-info { display: flex; gap: 24px; flex-wrap: wrap; font-size: 0.85rem; margin-top: 8px; position: relative; z-index: 1; }
+        .shortcut-hint { position: fixed; bottom: 20px; left: 20px; background: #1e293bdd; backdrop-filter: blur(8px); color: #94a3b8; padding: 8px 16px; border-radius: 12px; font-size: 0.7rem; z-index: 999; }
+        .cards-container { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding: 8px; background: rgba(255,255,255,0.4); backdrop-filter: blur(4px); border-radius: 20px; min-height: 100px; }
+        .monitoring-card { background: linear-gradient(135deg, #2d3748, #1a202c); border-radius: 16px; padding: 12px 20px; min-width: 140px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.3s; position: relative; border-top: 3px solid #f59e0b; }
+        .monitoring-card:hover { transform: translateY(-3px); }
+        .card-value { font-size: 1.5rem; font-weight: 700; color: #fbbf24; }
+        .card-label { font-size: 0.7rem; color: #cbd5e1; margin-top: 4px; }
+        .card-remove { position: absolute; top: 5px; left: 8px; cursor: pointer; color: #94a3b8; font-size: 12px; opacity: 0; }
+        .monitoring-card:hover .card-remove { opacity: 1; }
+        .unit-card-premium { background: linear-gradient(145deg, #ffffff, #f8fafc); border-radius: 32px; padding: 28px 32px; margin-bottom: 32px; box-shadow: 20px 20px 40px rgba(0,0,0,0.05), -10px -10px 30px rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.5); }
+        .unit-name-premium { font-size: 1.3rem; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; color: #1e293b; padding-bottom: 16px; border-bottom: 2px solid #e2e8f0; }
+        .stats-grid-premium { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; }
+        .stat-card-premium { text-align: center; padding: 16px; background: linear-gradient(145deg, #ffffff, #f1f5f9); border-radius: 20px; }
+        .stat-number-premium { font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .stat-label-premium { font-size: 0.7rem; color: #64748b; margin-top: 6px; font-weight: 500; }
+        .progress-section-premium { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
+        .progress-label-premium { display: flex; justify-content: space-between; font-size: 0.75rem; color: #475569; margin-bottom: 8px; }
+        .progress-bar-premium { background: #e2e8f0; border-radius: 20px; height: 8px; overflow: hidden; }
+        .progress-fill-premium { height: 100%; border-radius: 20px; transition: width 0.5s ease; background: linear-gradient(90deg, #667eea, #764ba2); }
+        .section-title { font-size: 1rem; font-weight: 600; color: #1e293b; margin: 24px 0 16px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .requests-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+        .request-card { background: linear-gradient(135deg, #fffbeb 0%, #fef7e0 100%); border-radius: 14px; padding: 12px 16px; border-right: 4px solid #f59e0b; }
+        .request-card.delete { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-right-color: #ef4444; }
+        .request-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+        .request-title { font-weight: 700; color: #78350f; font-size: 0.85rem; }
+        .request-badge { background: #fef3c7; color: #d97706; padding: 3px 10px; border-radius: 20px; font-size: 0.65rem; }
+        .request-card.delete .request-badge { background: #fee2e2; color: #dc2626; }
+        .request-details { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.75rem; color: #78350f; }
+        .delete-reason { margin-top: 8px; padding: 5px 8px; background: rgba(239,68,68,0.1); border-radius: 6px; font-size: 0.7rem; color: #dc2626; }
+        .btn-cancel-request { background: #64748b; color: white; border: none; padding: 3px 10px; border-radius: 6px; cursor: pointer; font-size: 0.65rem; margin-top: 8px; }
+        .btn-cancel-request:hover { background: #ef4444; }
+        .empty-requests { text-align: center; padding: 20px; background: #f8fafc; border-radius: 14px; color: #64748b; }
+        .table-toolbar { background: white; border-radius: 14px; padding: 10px 16px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+        .search-box input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 10px; width: 240px; font-family: inherit; font-size: 0.8rem; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 6px 14px; border-radius: 10px; cursor: pointer; font-family: inherit; font-weight: 500; font-size: 0.75rem; transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.05); }
+        .btn-refresh { background: #10b981; }
+        .btn-excel { background: #3b82f6; }
+        .btn-upload { background: #8b5cf6; }
+        .btn-clear { background: #64748b; }
+        .btn-danger { background: #ef4444; }
+        .btn-success { background: #10b981; }
+        .table-container { background: white; border-radius: 16px; overflow-x: auto; }
+        table { min-width: 800px; width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px 6px; text-align: center; border-bottom: 1px solid #e2e8f0; font-size: 0.75rem; }
+        th { background: #f8fafc; color: #475569; font-weight: 600; position: sticky; top: 0; }
+        tr { transition: background 0.15s; cursor: pointer; }
+        tr:hover { background: #f8fafc; }
+        .status-badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 500; }
+        .status-badge.completed { background: #dcfce7; color: #16a34a; }
+        .status-badge.incomplete { background: #fee2e2; color: #dc2626; }
+        .btn-icon { background: none; border: none; cursor: pointer; font-size: 0.9rem; margin: 0 3px; transition: transform 0.1s; }
+        .btn-icon:hover:not(:disabled) { transform: scale(1.05); }
+        .btn-icon:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-edit { color: #f59e0b; }
+        .btn-delete { color: #ef4444; }
+        .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding: 10px 14px; background: white; border-radius: 14px; flex-wrap: wrap; gap: 10px; font-size: 0.75rem; }
+        .pagination-btn { padding: 4px 10px; background: #f1f5f9; border: none; border-radius: 6px; cursor: pointer; font-size: 0.7rem; transition: all 0.2s; }
+        .pagination-btn:hover:not(:disabled) { background: #667eea; color: white; }
+        .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination-btn.active { background: #667eea; color: white; }
+        .per-page-select { padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.7rem; }
+        .edit-sidebar { position: fixed; left: -500px; top: 0; width: 500px; height: 100%; background: white; box-shadow: -5px 0 30px rgba(0,0,0,0.2); transition: 0.25s; z-index: 200; padding: 20px; overflow-y: auto; }
+        .edit-sidebar.open { left: 0; }
+        .close-sidebar { position: absolute; top: 15px; left: 15px; font-size: 22px; cursor: pointer; color: #94a3b8; }
+        .close-sidebar:hover { color: #ef4444; }
+        .sidebar-header { margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; }
+        .sidebar-title { font-size: 1.1rem; font-weight: 700; }
+        .sidebar-subtitle { font-size: 0.7rem; color: #64748b; }
+        .sidebar-nav { display: flex; justify-content: space-between; margin-bottom: 16px; gap: 10px; }
+        .sidebar-nav-btn { flex: 1; padding: 12px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.85rem; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 8px rgba(102,126,234,0.3); }
+        .sidebar-nav-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(102,126,234,0.4); }
+        .sidebar-nav-btn:disabled { background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%); color: #cbd5e1; cursor: not-allowed; transform: none; box-shadow: none; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.7rem; color: #475569; }
+        .form-group input, .form-group select { width: 100%; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.75rem; font-family: inherit; }
+        .form-group input:disabled, .form-group select:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+        .sidebar-actions { margin-top: 20px; }
+        .btn-save { background: #10b981; width: 100%; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 199; display: none; }
+        .overlay.active { display: block; }
+        .selected-bar { background: #e0e7ff; padding: 6px 12px; border-radius: 10px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; }
+        .context-menu { position: fixed; background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); padding: 6px 0; min-width: 150px; z-index: 10000; display: none; }
+        .context-menu.active { display: block; }
+        .context-menu-item { padding: 8px 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.75rem; }
+        .context-menu-item:hover { background: #f1f5f9; }
+        .context-menu-item.danger { color: #ef4444; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 24px; padding: 24px; width: 750px; max-width: 90%; max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; }
+        .close-modal { font-size: 24px; cursor: pointer; color: #94a3b8; }
+        .dynamic-fields-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; background: #f8fafc; padding: 16px; border-radius: 16px; }
+        .period-select { margin: 12px 0; padding: 12px; background: #f0fdf4; border-radius: 12px; }
+        .period-select label { font-weight: 600; color: #065f46; font-size: 0.75rem; }
+        .period-select select { width: 100%; padding: 8px; margin-top: 6px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.75rem; }
+        .note-field { background: #f8fafc; padding: 16px; border-radius: 16px; margin-top: 8px; }
+        .note-field textarea { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 10px; resize: vertical; font-size: 0.75rem; font-family: inherit; }
+        .alert { position: fixed; top: 80px; right: 20px; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideIn 0.25s ease; font-size: 0.8rem; font-weight: 500; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .alert-success { background: #f0fdf4; color: #16a34a; border-right: 4px solid #16a34a; }
+        .alert-error { background: #fef2f2; color: #dc2626; border-right: 4px solid #dc2626; }
+        .alert-info { background: #eff6ff; color: #2563eb; border-right: 4px solid #2563eb; }
+        .filter-modal-custom, .batch-modal-custom, .help-modal, .threshold-modal-custom { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 20px; padding: 24px; z-index: 1002; direction: rtl; box-shadow: 0 20px 40px rgba(0,0,0,0.25); width: 380px; }
+        .help-modal p { margin: 8px 0; padding: 6px 10px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; gap: 8px; font-size: 0.7rem; }
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            .edit-sidebar { width: 100%; left: -100%; }
+            .dynamic-fields-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid-premium { grid-template-columns: repeat(2, 1fr); }
+            .modal-content { width: 95%; }
+        }
+        .hamburger-menu { position: relative; display: inline-block; }
+        .hamburger-icon { cursor: pointer; font-size: 0.7rem; opacity: 0.6; padding: 2px 4px; display: inline-block; }
+        .hamburger-icon:hover { opacity: 1; }
+        .hamburger-dropdown { display: none; position: absolute; top: 100%; left: 0; background: white; min-width: 130px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; z-index: 1000; padding: 5px 0; white-space: nowrap; }
+        .hamburger-dropdown-item { padding: 6px 12px; cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .hamburger-dropdown-item:hover { background: #f1f5f9; }
+        .work-status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 500; }
+        .status-draft { background: #f1f5f9; color: #64748b; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-approved { background: #dcfce7; color: #16a34a; }
+        .status-revision { background: #fee2e2; color: #dc2626; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 500; }
+        .btn-sm { padding: 4px 12px; font-size: 0.7rem; }
+        .work-approval-bar { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 16px; padding: 16px 20px; margin-bottom: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; }
+        .notification-bell, .message-bell { position: relative; margin-left: 15px; cursor: pointer; transition: all 0.3s ease; }
+        .notification-bell:hover, .message-bell:hover { transform: scale(1.05); }
+        .notification-bell span, .message-bell span { font-size: 1.3rem; }
+        #notificationBadge, #messageBadge { position: absolute; top: -8px; right: -8px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; min-width: 18px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); display: none; }
+        .notification-header { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 14px 20px; color: white; font-weight: bold; font-size: 1rem; }
+        .btn-clear-all { width: 100%; padding: 10px; background: linear-gradient(135deg, #64748b, #475569); color: white; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 500; font-size: 0.8rem; transition: all 0.2s ease; }
+        .btn-clear-all:hover { background: linear-gradient(135deg, #475569, #334155); transform: translateY(-1px); }
+        .empty-notifications { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 0.85rem; }
+        .history-table { width: 100%; border-collapse: collapse; }
+        .history-table th, .history-table td { padding: 8px; border: 1px solid #e2e8f0; text-align: center; }
+        .history-table th { background: #f1f5f9; }
+    </style>
+</head>
+<body>
+<div class="main-header">
+    <div class="logo-area" style="display: flex; align-items: center; gap: 10px;">
+        <div class="logo-icon">📊</div>
+        <div class="logo">سامانه کارکرد <span>آوان</span></div>
+    </div>
+    <div class="user-area" style="display: flex; align-items: center; gap: 20px;">
+        <div class="user-info" style="text-align: left;">
+            <div class="user-name" style="font-weight: 600; font-size: 0.9rem; color: white;">{{ current_user.get_full_name() }}</div>
+            <div class="user-datetime" id="userDateTime" style="font-size: 0.7rem; color: #94a3b8; margin-top: 2px;">📅 در حال بارگذاری...</div>
+        </div>
+        <a href="/logout" class="btn-logout" style="background: rgba(255,255,255,0.1); color: white; padding: 8px 20px; text-decoration: none; border-radius: 40px; font-size: 0.85rem; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.2); display: inline-flex; align-items: center; justify-content: center;">خروج</a>
+        <div class="message-bell" onclick="window.open('/work-messages', '_blank')">
+            <span>📬</span>
+            <span id="messageBadge">0</span>
+        </div>
+        <div class="notification-bell" onclick="toggleNotificationMenu()">
+            <span>🔔</span>
+            <span id="notificationBadge">0</span>
+        </div>
+        <div id="notificationMenu" style="display: none; position: absolute; top: 70px; left: 20px; width: 400px; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); z-index: 1000; overflow: hidden;">
+            <div class="notification-header">📢 اعلان‌ها</div>
+            <div class="notification-list" id="notificationList" style="max-height: 400px; overflow-y: auto;">
+                <div class="empty-notifications">در حال بارگذاری...</div>
+            </div>
+            <div style="padding: 12px 16px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                <button class="btn-clear-all" onclick="markAllNotificationsRead()">✓ علامت‌گذاری همه به عنوان خوانده شده</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="container">
+<div class="nav-links">
+    <a href="/unit-supervisor/dashboard" class="nav-link active">🏠 کارکرد پرسنل</a>
+    <a href="/profile" target="_blank" class="nav-link">👤 پروفایل</a>
+    <a href="/tickets" target="_blank" class="nav-link">🎫 تیکت‌ها</a>
+	<a href="/unit-supervisor/requests" class="nav-link">📋 درخواست‌های پرسنل</a>
+</div>
+
+        <!-- ========== بخش انتخاب دوره کارکرد ========== -->
+        <div class="work-approval-bar">
+            <div>
+                <label style="font-weight: 600; color: #065f46; margin-left: 10px;">📅 انتخاب دوره کارکرد:</label>
+                <select id="workPeriodSelect" style="padding: 8px 16px; border-radius: 10px; border: 1px solid #10b981; background: white; font-family: inherit; min-width: 250px;">
+                    <option value="">--- همه دوره‌ها ---</option>
+                </select>
+            </div>
+            <div>
+                <button id="bulkSubmitWorkBtn" class="btn-primary" style="background: #10b981; padding: 10px 20px;" onclick="bulkSubmitWork()">
+                    📤 تایید گروهی کارکرد دوره انتخاب شده
+                </button>
+            </div>
+        </div>
+
+        <div class="smart-header">
+            <div class="welcome-title">👋 خوش آمدید {{ current_user.first_name }} عزیز</div>
+            <div class="header-info">
+                <span>🏢 اداره: {{ department_name }}</span>
+                <span>📁 واحد: {{ unit_name }}</span>
+                <span>📅 دوره: {{ period_title or 'فعال نشده' }}</span>
+                <span>🕒 تاریخ امروز: {{ today_date }}</span>
+            </div>
+        </div>
+        <div class="cards-container" id="cardsContainer"></div>
+        <div class="unit-card-premium">
+            <div class="unit-name-premium"><span>🏢</span><span>{{ unit_name }}</span></div>
+            <div class="stats-grid-premium">
+                <div class="stat-card-premium"><div class="stat-number-premium" id="totalPersonnel">0</div><div class="stat-label-premium">تعداد پرسنل</div></div>
+                <div class="stat-card-premium"><div class="stat-number-premium" id="totalFieldsCount">0</div><div class="stat-label-premium">کل فیلدها</div></div>
+                <div class="stat-card-premium"><div class="stat-number-premium" id="completionPercent">0%</div><div class="stat-label-premium">تکمیل اطلاعات</div></div>
+                <div class="stat-card-premium"><div class="stat-number-premium" id="incompleteCount">0</div><div class="stat-label-premium">پرسنل ناقص</div></div>
+            </div>
+            <div class="progress-section-premium">
+                <div class="progress-label-premium"><span>📊 پیشرفت تکمیل اطلاعات</span><span id="completionLabel">0%</span></div>
+                <div class="progress-bar-premium"><div class="progress-fill-premium" id="progressFill" style="width:0%"></div></div>
+            </div>
+        </div>
+        <div class="section-title"><span>⏳ درخواست‌های در انتظار تایید ادمین</span><button class="btn-primary btn-refresh" onclick="refreshAll()">🔄 رفرش</button></div>
+        <div id="requestsContainer" class="requests-container"><div class="empty-requests">در حال بارگذاری...</div></div>
+        <div class="section-title"><span>📋 لیست پرسنل واحد</span><span style="cursor:pointer;" onclick="showHelpModal()">❓</span></div>
+        <div class="table-toolbar">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 جستجوی سریع... (Ctrl+F)">
+                </div>
+                <div class="advanced-search" style="display: flex; gap: 8px; align-items: center;">
+                    <select id="searchFieldSelect" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.8rem; min-width: 150px;">
+                        <option value="">انتخاب ستون...</option>
+                    </select>
+                    <input type="text" id="advancedSearchInput" placeholder="مقدار جستجو..." style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; width: 200px; font-family: inherit; font-size: 0.8rem;">
+                    <button class="btn-primary" id="advancedSearchBtn" style="padding: 6px 12px;">🔍 جستجو</button>
+                    <button class="btn-primary btn-clear" id="clearAdvancedSearchBtn" style="padding: 6px 12px; display: none;">✖ پاک کردن</button>
+                </div>
+            </div>
+            <div>
+                <button class="btn-primary btn-clear" id="clearFiltersBtn" style="display:none;" onclick="clearAllFilters()">🗑️ پاک کردن فیلترها</button>
+                <button class="btn-primary btn-refresh" onclick="refreshAll()">🔄 رفرش</button>
+                <button class="btn-primary" onclick="openAddPersonnelModal()">➕ افزودن پرسنل</button>
+                <button class="btn-primary btn-upload" onclick="openUploadExcelModal()">📤 آپلود اکسل</button>
+                <button class="btn-primary btn-excel" onclick="exportToExcel()">📊 خروجی اکسل</button>
+                <button class="btn-primary btn-danger" id="clearThresholdBtn" onclick="clearThresholdFilter()" style="display:none;">⚠️ پاک کردن فیلتر عددی</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="personnelTable">
+                <thead id="tableHeader"></thead>
+                <tbody id="tableBody"><tr><td colspan="20" style="text-align:center;padding:30px;">در حال بارگذاری...<\/td></tr</tbody>
+            </table>
+        </div>
+        <div class="pagination-container" id="paginationContainer">
+            <div class="page-info" id="pageInfo"></div>
+            <div><span>نمایش</span> <select id="perPageSelect" class="per-page-select" onchange="changePerPage()"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> <span>رکورد</span></div>
+            <div class="pagination-controls" id="paginationButtons"></div>
+        </div>
+    </div>
+    <div class="overlay" id="overlay" onclick="closeEditSidebar()"></div>
+    <div class="edit-sidebar" id="editSidebar">
+        <span class="close-sidebar" onclick="closeEditSidebar()">✖</span>
+        <div class="sidebar-header"><div class="sidebar-title">✏️ ویرایش پرسنل</div><div class="sidebar-subtitle" id="sidebarSubtitle"></div></div>
+        <div class="sidebar-nav"><button class="sidebar-nav-btn" id="prevBtn" onclick="navigatePersonnel(-1)" disabled>→ قبلی</button><button class="sidebar-nav-btn" id="nextBtn" onclick="navigatePersonnel(1)" disabled>بعدی ←</button></div>
+        <form id="editForm">
+            <input type="hidden" id="editId">
+            <div id="editFieldsContainer"></div>
+            <div class="period-select" id="editPeriodContainer"><label>📅 دوره</label><select id="editPeriodId"><option value="">بدون دوره</option></select></div>
+            <div class="sidebar-actions"><button type="submit" class="btn-primary btn-save">💾 ذخیره (Ctrl+S)</button></div>
+        </form>
+    </div>
+    <div id="addPersonnelModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>➕ افزودن پرسنل جدید</h3><span class="close-modal" onclick="closeAddModal()">✖</span></div>
+            <form id="addPersonnelForm">
+                <div class="form-group">
+                    <label>کد ملی <span style="color:#ef4444;">* (10 رقم)</span></label>
+                    <input type="text" id="addNationalCode" maxlength="10" pattern="[0-9]{10}" placeholder="کد ملی خود را وارد کنید" required>
+                    <small style="color: #64748b; font-size: 0.65rem;">کد ملی باید دقیقاً 10 رقم باشد</small>
+                </div>
+                <div id="dynamicFieldsContainer" class="dynamic-fields-grid"></div>
+                <div class="period-select">
+                    <label>📅 انتخاب دوره <span style="color:#ef4444;">*</span></label>
+                    <select id="addPeriodId" required>
+                        <option value="">انتخاب دوره...</option>
+                    </select>
+                </div>
+                <div class="note-field"><label>📝 یادداشت (اختیاری)</label><textarea id="addNote" rows="2"></textarea></div>
+                <div style="display:flex; gap:10px; margin-top:20px;"><button type="submit" class="btn-primary">📨 ثبت درخواست</button><button type="button" class="btn-primary btn-clear" onclick="closeAddModal()">انصراف</button></div>
+            </form>
+        </div>
+    </div>
+    <div id="uploadExcelModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>📤 آپلود فایل اکسل</h3><span class="close-modal" onclick="closeUploadExcelModal()">✖</span></div>
+            <form id="uploadExcelForm" enctype="multipart/form-data">
+                <div class="form-group"><label>فایل اکسل</label><input type="file" id="excelFile" accept=".xlsx,.xls" required></div>
+                <div style="background:#f8fafc;padding:10px;border-radius:10px;margin-top:12px;font-size:0.7rem;">ℹ️ ستون‌های مورد نیاز: کد ملی، نام، نام خانوادگی، شماره تماس، سمت</div>
+                <div style="display:flex;gap:10px;margin-top:20px;"><button type="submit" class="btn-primary">📤 آپلود</button><button type="button" class="btn-primary btn-clear" onclick="closeUploadExcelModal()">انصراف</button></div>
+            </form>
+        </div>
+    </div>
+    <div id="alertContainer"></div>
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" onclick="contextMenuEdit()">✏️ ویرایش</div>
+        <div class="context-menu-item" onclick="contextMenuCopy()">📋 کپی اطلاعات</div>
+        <div class="context-menu-item danger" onclick="contextMenuDelete()">🗑️ درخواست حذف</div>
+    </div>
+
+    <script>
+        // ========== متغیرهای اصلی ==========
+        let allPersonnel = [], filteredPersonnel = [], dynamicFields = [], pendingRequests = [], deleteRequests = [], periods = [];
+        let currentPage = 1, perPage = 25, totalPages = 1, currentEditIndex = -1, dynamicCards = [], currentFilters = {};
+        let selectedRows = new Set(), currentBatchField = null;
+        let windowDeleteLock = false;
+        let thresholdFilter = null;
+        let thresholdField = null;
+        let advancedSearchField = null;
+        let advancedSearchValue = null;
+        let contextMenuId = null, contextMenuIdx = null;
+        let workStatusCache = {};
+        let bulkPersonnelIds = [];
+
+        // ========== توابع کمکی ==========
+        function toPersianNumber(num) {
+            if (num === undefined || num === null) return '۰';
+            const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+            return num.toString().replace(/\d/g, x => persianDigits[parseInt(x)]);
+        }
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+        }
+        function showAlert(msg, type) {
+            const c = document.getElementById('alertContainer');
+            c.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+            setTimeout(() => c.innerHTML = '', 3000);
+        }
+
+        // ========== اعلان‌ها و پیام‌ها ==========
+        async function loadMessages() {
+            try {
+                const res = await fetch('/api/work/messages');
+                const messages = await res.json();
+                const badge = document.getElementById('messageBadge');
+                const unreadCount = messages.filter(m => !m.is_read).length;
+                if (unreadCount > 0) {
+                    badge.style.display = 'inline-block';
+                    badge.innerText = unreadCount > 99 ? '99+' : unreadCount;
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function loadNotifications() {
+            fetch('/api/notifications')
+                .then(res => res.json())
+                .then(data => {
+                    const badge = document.getElementById('notificationBadge');
+                    if (data.length > 0) {
+                        badge.style.display = 'inline-block';
+                        badge.innerText = data.length > 99 ? '99+' : data.length;
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                    const list = document.getElementById('notificationList');
+                    if (data.length === 0) {
+                        list.innerHTML = '<div class="empty-notifications">✅ همه اعلان‌ها خوانده شده است</div>';
+                        return;
+                    }
+                    let html = '';
+                    for (const n of data) {
+                        html += `<div style="padding: 12px; border-bottom: 1px solid #e2e8f0; cursor: pointer;" onclick="markNotificationRead(${n.id})">
+                                    <div style="font-weight: 600; font-size: 0.85rem;">${escapeHtml(n.title)}</div>
+                                    <div style="font-size: 0.75rem; color: #475569; margin-top: 4px;">${escapeHtml(n.message)}</div>
+                                    <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 6px;">📅 ${n.created_at}</div>
+                                </div>`;
+                    }
+                    list.innerHTML = html;
+                })
+                .catch(err => console.error(err));
+        }
+
+        function toggleNotificationMenu() {
+            const menu = document.getElementById('notificationMenu');
+            if (menu.style.display === 'none') {
+                menu.style.display = 'block';
+                loadNotifications();
+            } else {
+                menu.style.display = 'none';
+            }
+        }
+
+        function markNotificationRead(id) {
+            fetch(`/api/notifications/${id}/read`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => { if (data.success) loadNotifications(); });
+        }
+
+        function markAllNotificationsRead() {
+            fetch('/api/notifications/read-all', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
+                        document.getElementById('notificationBadge').style.display = 'none';
+                    }
+                });
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('notificationMenu');
+            const bell = document.querySelector('.notification-bell');
+            if (menu && !menu.contains(e.target) && !bell.contains(e.target)) {
+                menu.style.display = 'none';
+            }
+        });
+
+        // ========== کارت‌های داینامیک ==========
+        function loadSavedCards() {
+            const saved = localStorage.getItem('unit_supervisor_cards');
+            if(saved) { try { dynamicCards = JSON.parse(saved); dynamicCards.forEach(c => addDynamicCardToDOM(c.label, c.value)); } catch(e){} }
+        }
+        function saveCards() { localStorage.setItem('unit_supervisor_cards', JSON.stringify(dynamicCards)); }
+        function addDynamicCardToDOM(label, value) {
+            const container = document.getElementById('cardsContainer');
+            if(!container.querySelector(`[data-label="${label}"]`)) {
+                container.insertAdjacentHTML('beforeend', `<div class="monitoring-card" data-card="dynamic" data-label="${label}"><div class="card-value">${toPersianNumber(value)}</div><div class="card-label">📊 ${label}</div><span class="card-remove" onclick="removeDynamicCard(this, '${label}')">✕</span></div>`);
+            }
+        }
+        function removeDynamicCard(el, label) { el.closest('.monitoring-card').remove(); dynamicCards = dynamicCards.filter(c => c.label !== label); saveCards(); showAlert('کارت حذف شد', 'success'); }
+        function createDynamicCard(field, label) {
+            if(!filteredPersonnel.length) { showAlert('هیچ داده‌ای وجود ندارد', 'error'); return; }
+            let total = 0, count = 0, isNumeric = true;
+            for(const p of filteredPersonnel) {
+                const val = p[field];
+                if(val && val !== '-' && val !== '') {
+                    count++;
+                    if(!isNaN(parseFloat(val)) && isFinite(val)) total += parseFloat(val);
+                    else isNumeric = false;
+                }
+            }
+            const displayValue = isNumeric && count > 0 ? total.toLocaleString() : count;
+            const displayLabel = isNumeric && count > 0 ? `${label} (مجموع)` : `${label} (تعداد)`;
+            addDynamicCardToDOM(displayLabel, displayValue);
+            dynamicCards.push({ label: displayLabel, value: displayValue });
+            saveCards();
+            showAlert(`کارت "${displayLabel}" ساخته شد`, 'success');
+        }
+
+        // ========== راهنما ==========
+        function showHelpModal() {
+            const html = `<div id="helpModal" class="help-modal"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;"><h4>📖 راهنمای آیکن‌ها</h4><span onclick="closeHelpModal()" style="cursor:pointer;">✖</span></div>
+                <p><span>⚡</span> ویرایش گروهی - تغییر مقدار یک ستون برای همه</p><p><span>📊</span> ساخت کارت نظارتی - نمایش مجموع یا تعداد</p>
+                <p><span>🔍</span> فیلتر ستونی - فیلتر بر اساس مقادیر یکتا</p><p><span>📜</span> تاریخچه فیلد - مقادیر در دوره‌های مختلف</p>
+                <p><span>🗑️</span> حذف - ارسال درخواست حذف به ادمین</p><p><span>✏️</span> ویرایش - ویرایش اطلاعات پرسنل</p>
+                <p><span>⚠️</span> فیلتر عددی - هایلایت و فیلتر مقادیر عددی</p>
+                <div style="margin-top:15px; text-align:center;"><button class="btn-primary" onclick="closeHelpModal()">بستن</button></div></div>`;
+            document.body.insertAdjacentHTML('beforeend', html);
+        }
+        function closeHelpModal() { const m = document.getElementById('helpModal'); if(m) m.remove(); }
+
+        // ========== فیلتر ستونی ==========
+        function openFilterModal(field) {
+            const valuesMap = new Map();
+            for (let i = 0; i < allPersonnel.length; i++) {
+                let val = allPersonnel[i][field];
+                if (val !== undefined && val !== null && val !== '' && val !== '-') {
+                    const valStr = String(val);
+                    if (!valuesMap.has(valStr)) valuesMap.set(valStr, val);
+                }
+            }
+            const uniqueValues = Array.from(valuesMap.keys());
+            if (uniqueValues.length === 0) {
+                showAlert('مقداری برای فیلتر کردن وجود ندارد', 'error');
+                return;
+            }
+            uniqueValues.sort((a, b) => {
+                const aNum = parseFloat(a), bNum = parseFloat(b);
+                if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
+                return a.localeCompare(b);
+            });
+            let opts = '';
+            for (let i = 0; i < uniqueValues.length; i++) {
+                const valStr = uniqueValues[i];
+                const isChecked = currentFilters[field] && currentFilters[field].includes(valStr);
+                opts += `<label style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #e2e8f0;">
+                    <input type="checkbox" value="${escapeHtml(valStr)}" ${isChecked ? 'checked' : ''}> 
+                    <span style="font-size:0.75rem;">${escapeHtml(valStr)}</span>
+                </label>`;
+            }
+            const oldModal = document.getElementById('filterModalCustom');
+            if (oldModal) oldModal.remove();
+            const modalHtml = `<div id="filterModalCustom" class="filter-modal-custom">
+                <h3>🔍 فیلتر ستون ${field}</h3>
+                <input type="text" id="filterSearch" placeholder="🔍 جستجو در مقادیر..." style="width:100%; padding:8px 12px; margin-bottom:12px;">
+                <div id="filterOptionsCustom" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">${opts}</div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-primary" id="applyFilterBtn" style="flex:1;">✓ اعمال فیلتر</button>
+                    <button class="btn-primary btn-clear" id="cancelFilterBtn" style="flex:1;">انصراف</button>
+                    <button class="btn-primary btn-clear" id="clearFieldFilterBtn" style="flex:1; background:#ef4444;">🗑️ پاک کردن</button>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            document.getElementById('filterSearch').addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase();
+                const labels = document.querySelectorAll('#filterOptionsCustom label');
+                for (let i = 0; i < labels.length; i++) {
+                    labels[i].style.display = labels[i].textContent.toLowerCase().includes(term) ? 'flex' : 'none';
+                }
+            });
+            document.getElementById('applyFilterBtn').onclick = function() {
+                const selectedStrings = [];
+                const checkboxes = document.querySelectorAll('#filterOptionsCustom input:checked');
+                for (let i = 0; i < checkboxes.length; i++) selectedStrings.push(checkboxes[i].value);
+                if (selectedStrings.length > 0) currentFilters[field] = selectedStrings;
+                else delete currentFilters[field];
+                document.getElementById('filterModalCustom').remove();
+                let result = [...allPersonnel];
+                for (const filterField in currentFilters) {
+                    const filterValues = currentFilters[filterField];
+                    if (filterValues && filterValues.length > 0) {
+                        result = result.filter(p => {
+                            let pVal = p[filterField];
+                            if (pVal === undefined || pVal === null) return false;
+                            return filterValues.includes(String(pVal));
+                        });
+                    }
+                }
+                filteredPersonnel = result;
+                currentPage = 1;
+                totalPages = Math.ceil(filteredPersonnel.length / perPage);
+                renderTable();
+                renderPagination();
+                const hasFilters = Object.keys(currentFilters).length > 0;
+                document.getElementById('clearFiltersBtn').style.display = hasFilters ? 'inline-block' : 'none';
+                if (filteredPersonnel.length === 0) showAlert('هیچ رکوردی با این فیلتر یافت نشد', 'info');
+                else showAlert(`${filteredPersonnel.length} رکورد یافت شد`, 'success');
+            };
+            document.getElementById('cancelFilterBtn').onclick = function() { document.getElementById('filterModalCustom').remove(); };
+            document.getElementById('clearFieldFilterBtn').onclick = function() {
+                delete currentFilters[field];
+                document.getElementById('filterModalCustom').remove();
+                let result = [...allPersonnel];
+                for (const filterField in currentFilters) {
+                    const filterValues = currentFilters[filterField];
+                    if (filterValues && filterValues.length > 0) {
+                        result = result.filter(p => {
+                            let pVal = p[filterField];
+                            if (pVal === undefined || pVal === null) return false;
+                            return filterValues.includes(String(pVal));
+                        });
+                    }
+                }
+                filteredPersonnel = result;
+                currentPage = 1;
+                totalPages = Math.ceil(filteredPersonnel.length / perPage);
+                renderTable();
+                renderPagination();
+                const hasFilters = Object.keys(currentFilters).length > 0;
+                document.getElementById('clearFiltersBtn').style.display = hasFilters ? 'inline-block' : 'none';
+                showAlert(`فیلتر ستون "${field}" پاک شد`, 'success');
+            };
+        }
+
+        // ========== فیلتر عددی ==========
+        function checkThresholdCondition(value, operator, threshold) {
+            const num = parseFloat(value);
+            if (isNaN(num)) return false;
+            switch(operator) {
+                case 'greater': return num > threshold;
+                case 'greater_equal': return num >= threshold;
+                case 'less': return num < threshold;
+                case 'less_equal': return num <= threshold;
+                case 'equal': return num === threshold;
+                default: return false;
+            }
+        }
+        function applyThresholdHighlight() {
+            if (!thresholdFilter) return;
+            const rows = document.querySelectorAll('#personnelTable tbody tr');
+            if (rows.length === 0) return;
+            let columnIndex = -1;
+            const headers = document.querySelectorAll('#personnelTable thead th');
+            for (let i = 0; i < headers.length; i++) {
+                let headerText = headers[i].innerText || headers[i].textContent;
+                headerText = headerText.trim().replace(/[☰🔢📊🔍⚠️❓]/g, '').trim();
+                if (headerText === thresholdFilter.field) {
+                    columnIndex = i;
+                    break;
+                }
+            }
+            if (columnIndex === -1) return;
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length > columnIndex) {
+                    let cellValue = cells[columnIndex].innerText.replace(/,/g, '');
+                    if (checkThresholdCondition(cellValue, thresholdFilter.operator, thresholdFilter.value)) {
+                        row.style.backgroundColor = thresholdFilter.color;
+                    } else {
+                        row.style.backgroundColor = '';
+                    }
+                }
+            });
+        }
+        function removeThresholdHighlight() {
+            document.querySelectorAll('#personnelTable tbody tr').forEach(row => row.style.backgroundColor = '');
+        }
+        function loadSavedThresholdFilter() {
+            const saved = localStorage.getItem('thresholdFilter');
+            if (saved) {
+                try {
+                    thresholdFilter = JSON.parse(saved);
+                    setTimeout(() => applyThresholdHighlight(), 100);
+                    const clearBtn = document.getElementById('clearThresholdBtn');
+                    if(clearBtn) clearBtn.style.display = 'inline-block';
+                } catch(e) {}
+            }
+        }
+        function clearThresholdFilter() {
+            thresholdFilter = null;
+            localStorage.removeItem('thresholdFilter');
+            removeThresholdHighlight();
+            filteredPersonnel = [...allPersonnel];
+            currentPage = 1;
+            totalPages = Math.ceil(filteredPersonnel.length / perPage);
+            renderTable();
+            renderPagination();
+            const clearBtn = document.getElementById('clearThresholdBtn');
+            if(clearBtn) clearBtn.style.display = 'none';
+            showAlert('فیلتر عددی حذف شد', 'success');
+        }
+        function openThresholdModal(fieldName, fieldType) {
+            if (fieldType !== 'number' && fieldType !== 'decimal') {
+                showAlert('این قابلیت فقط برای فیلدهای عددی قابل استفاده است', 'error');
+                return;
+            }
+            thresholdField = fieldName;
+            const modalHtml = `<div id="thresholdModal" class="modal active" style="display:flex;">
+                <div class="modal-content" style="width: 450px;">
+                    <div class="modal-header"><h3>🔢 فیلتر عددی - ${fieldName}</h3><span class="close-modal" onclick="closeThresholdModal()">✖</span></div>
+                    <div class="form-group"><label>مقدار آستانه:</label><input type="number" id="thresholdValue" placeholder="مثال: 50"></div>
+                    <div class="form-group"><label>نوع مقایسه:</label><select id="thresholdOperator"><option value="greater">بزرگتر از (>)</option><option value="greater_equal">بزرگتر یا مساوی (>=)</option><option value="less">کوچکتر از (<)</option><option value="less_equal">کوچکتر یا مساوی (<=)</option><option value="equal">مساوی (=)</option></select></div>
+                    <div class="form-group"><label>رنگ هایلایت:</label><select id="thresholdColor"><option value="#fee2e2">قرمز کم رنگ</option><option value="#fef3c7">زرد کم رنگ</option><option value="#dcfce7">سبز کم رنگ</option><option value="#e0e7ff">آبی کم رنگ</option><option value="#f3e8ff">بنفش کم رنگ</option></select></div>
+                    <div style="display:flex; gap:10px;"><button class="btn-primary" onclick="applyThresholdAndFilter()" style="flex:1;">✓ اعمال فیلتر</button><button class="btn-primary" onclick="applyThresholdOnly()" style="flex:1; background:#10b981;">🎨 فقط هایلایت</button><button class="btn-primary btn-clear" onclick="clearThresholdFilter()" style="flex:1; background:#ef4444;">✗ حذف فیلتر</button></div>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+        function closeThresholdModal() { const m = document.getElementById('thresholdModal'); if(m) m.remove(); }
+        function applyThresholdAndFilter() {
+            const value = parseFloat(document.getElementById('thresholdValue').value);
+            const operator = document.getElementById('thresholdOperator').value;
+            const color = document.getElementById('thresholdColor').value;
+            if (isNaN(value)) { showAlert('لطفاً یک مقدار عددی معتبر وارد کنید', 'error'); return; }
+            thresholdFilter = { field: thresholdField, operator: operator, value: value, color: color };
+            localStorage.setItem('thresholdFilter', JSON.stringify(thresholdFilter));
+            closeThresholdModal();
+            const filtered = allPersonnel.filter(p => {
+                let val = p[thresholdFilter.field];
+                if (val === undefined || val === null) val = '';
+                return checkThresholdCondition(val, operator, value);
+            });
+            if (filtered.length === 0) { showAlert('هیچ رکوردی با شرایط مورد نظر یافت نشد', 'info'); return; }
+            filteredPersonnel = filtered;
+            currentPage = 1;
+            totalPages = Math.ceil(filteredPersonnel.length / perPage);
+            renderTable();
+            renderPagination();
+            setTimeout(() => applyThresholdHighlight(), 200);
+            document.getElementById('clearThresholdBtn').style.display = 'inline-block';
+            showAlert(`${filtered.length} رکورد فیلتر شد`, 'success');
+        }
+        function applyThresholdOnly() {
+            const val = parseFloat(document.getElementById('thresholdValue').value);
+            const op = document.getElementById('thresholdOperator').value;
+            const color = document.getElementById('thresholdColor').value;
+            if (isNaN(val)) { showAlert('مقدار عددی معتبر وارد کنید', 'error'); return; }
+            thresholdFilter = { field: thresholdField, operator: op, value: val, color: color };
+            localStorage.setItem('thresholdFilter', JSON.stringify(thresholdFilter));
+            closeThresholdModal();
+            setTimeout(() => applyThresholdHighlight(), 100);
+            document.getElementById('clearThresholdBtn').style.display = 'inline-block';
+            showAlert(`هایلایت برای مقادیر ${op} ${val} اعمال شد`, 'success');
+        }
+
+        // ========== تاریخچه فیلد ==========
+        async function showPersonnelHistory(pid) {
+            try {
+                const personnelRes = await fetch(`/unit-supervisor/api/personnel/${pid}`);
+                const personnel = await personnelRes.json();
+                const historyRes = await fetch(`/unit-supervisor/api/personnel-history/${pid}`);
+                const historyData = await historyRes.json();
+                const nationalCode = personnel.national_code;
+                const fullName = personnel.full_name || `${personnel.first_name || ''} ${personnel.last_name || ''}`.trim();
+                let fieldsHtml = '';
+                for(const f of historyData.fields) {
+                    if(!f.is_key && f.title !== 'نام' && f.title !== 'نام خانوادگی') {
+                        fieldsHtml += `<option value="${f.title}">${f.title}</option>`;
+                    }
+                }
+                const modalHtml = `<div id="historyModal" class="modal active" style="display:flex;">
+                    <div class="modal-content" style="width: 850px; max-width: 95%;">
+                        <div class="modal-header"><h3>📜 تاریخچه - ${nationalCode} - ${fullName}</h3><span class="close-modal" onclick="closeHistoryModal()">✖</span></div>
+                        <div><label>📋 انتخاب فیلد: </label><select id="historyFieldSelect" style="padding:8px; width:250px;"><option value="">انتخاب کنید...</option>${fieldsHtml}</select></div>
+                        <div id="historyResult" style="overflow-x:auto; margin-top:15px;"><div style="text-align:center; padding:30px;">لطفاً یک فیلد را انتخاب کنید</div></div>
+                    </div>
+                </div>`;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                document.getElementById('historyFieldSelect').addEventListener('change', function() {
+                    const selectedField = this.value;
+                    const resultDiv = document.getElementById('historyResult');
+                    if(!selectedField) { resultDiv.innerHTML = '<div style="text-align:center; padding:30px;">لطفاً یک فیلد را انتخاب کنید</div>'; return; }
+                    let tableHtml = `<table class="history-table"><thead><tr><th>دوره</th><th>تاریخ شروع</th><th>تاریخ پایان</th><th>مقدار</th></tr></thead><tbody>`;
+                    let hasData = false;
+                    for(const period of historyData.history) {
+                        const value = period.values[selectedField];
+                        if(value && value !== '-' && value !== '') hasData = true;
+                        tableHtml += `<tr><td>${period.period_title || '-'}</td><td>${period.period_start || '-'}</td><td>${period.period_end || '-'}</td><td style="font-weight:500;color:#667eea;">${value || '-'}</td></tr>`;
+                    }
+                    tableHtml += '</tbody></table>';
+                    if(!hasData) resultDiv.innerHTML = '<div style="text-align:center; padding:30px;">📭 هیچ مقداری برای این فیلد در دوره‌های مختلف یافت نشد</div>';
+                    else resultDiv.innerHTML = tableHtml;
+                });
+            } catch(e) { console.error(e); showAlert('خطا در دریافت تاریخچه', 'error'); }
+        }
+        function closeHistoryModal() { const m = document.getElementById('historyModal'); if(m) m.remove(); }
+
+        // ========== جستجوی پیشرفته ==========
+        function updateSearchFieldSelect() {
+            const select = document.getElementById('searchFieldSelect');
+            if(!select) return;
+            select.innerHTML = '<option value="">انتخاب ستون...</option>';
+            const baseFields = [
+                { value: 'full_name', label: 'نام و نام خانوادگی' },
+                { value: 'national_code', label: 'کد ملی' },
+                { value: 'phone', label: 'شماره تماس' },
+                { value: 'position', label: 'سمت' }
+            ];
+            for(const f of baseFields) {
+                const option = document.createElement('option');
+                option.value = f.value;
+                option.textContent = f.label;
+                select.appendChild(option);
+            }
+            if(dynamicFields && dynamicFields.length > 0) {
+                for(const f of dynamicFields) {
+                    if(!f.is_key && f.title !== 'نام' && f.title !== 'نام خانوادگی') {
+                        const option = document.createElement('option');
+                        option.value = f.title;
+                        option.textContent = f.title;
+                        select.appendChild(option);
+                    }
+                }
+            }
+        }
+
+        function performAdvancedSearch() {
+            const field = document.getElementById('searchFieldSelect').value;
+            const value = document.getElementById('advancedSearchInput').value.trim().toLowerCase();
+            if(!field) { showAlert('لطفاً ابتدا ستون مورد نظر را انتخاب کنید', 'error'); return; }
+            if(!value) { showAlert('لطفاً مقدار جستجو را وارد کنید', 'error'); return; }
+            advancedSearchField = field;
+            advancedSearchValue = value;
+            renderTable();
+            document.getElementById('clearAdvancedSearchBtn').style.display = 'inline-block';
+            showAlert(`جستجو در "${field}" برای "${value}"`, 'success');
+        }
+
+        function clearAdvancedSearch() {
+            advancedSearchField = null;
+            advancedSearchValue = null;
+            document.getElementById('advancedSearchInput').value = '';
+            document.getElementById('clearAdvancedSearchBtn').style.display = 'none';
+            document.getElementById('searchFieldSelect').value = '';
+            renderTable();
+            showAlert('جستجوی پیشرفته پاک شد', 'success');
+        }
+
+        // ========== بارگذاری وضعیت کارکرد ==========
+        async function loadWorkStatusForPeriod(periodId) {
+            if (!periodId) return;
+            try {
+                const res = await fetch(`/api/work/statuses?period_id=${periodId}`);
+                if (res.ok) {
+                    const statuses = await res.json();
+                    for (const s of statuses) {
+                        if (!workStatusCache[s.personnel_id]) workStatusCache[s.personnel_id] = {};
+                        workStatusCache[s.personnel_id][periodId] = s.status;
+                    }
+                }
+            } catch(e) { console.error(e); }
+            renderTable();
+        }
+
+        // ========== تابع جدید: بارگذاری همه وضعیت‌های کارکرد برای همه دوره‌ها ==========
+        async function loadAllWorkStatuses() {
+            try {
+                const periodsRes = await fetch('/unit-supervisor/api/periods');
+                const allPeriods = await periodsRes.json();
+                
+                for (const period of allPeriods) {
+                    const periodId = period.id;
+                    const res = await fetch(`/api/work/statuses?period_id=${periodId}`);
+                    if (res.ok) {
+                        const statuses = await res.json();
+                        for (const s of statuses) {
+                            if (!workStatusCache[s.personnel_id]) workStatusCache[s.personnel_id] = {};
+                            workStatusCache[s.personnel_id][periodId] = s.status;
+                        }
+                    }
+                }
+            } catch(e) { console.error('خطا در بارگذاری همه وضعیت‌ها:', e); }
+        }
+
+        // ========== توابع تایید ==========
+        async function submitWorkForPersonnel(personnelId) {
+            const periodId = document.getElementById('workPeriodSelect')?.value;
+            if (!periodId || periodId === '') {
+                showAlert('لطفاً ابتدا دوره را انتخاب کنید', 'error');
+                return;
+            }
+            
+            const personnel = allPersonnel.find(p => p.id == personnelId);
+            if (!personnel) {
+                showAlert('پرسنل یافت نشد', 'error');
+                return;
+            }
+            
+            let missingFields = [];
+            
+            if (!personnel.first_name || personnel.first_name === '' || personnel.first_name === '-') {
+                missingFields.push('نام');
+            }
+            if (!personnel.last_name || personnel.last_name === '' || personnel.last_name === '-') {
+                missingFields.push('نام خانوادگی');
+            }
+            
+            const phoneField = dynamicFields.find(f => f.title === 'شماره تماس' && f.is_required);
+            if (phoneField && (!personnel.phone || personnel.phone === '')) {
+                missingFields.push('شماره تماس');
+            }
+            
+            const positionField = dynamicFields.find(f => f.title === 'سمت' && f.is_required);
+            if (positionField && (!personnel.position || personnel.position === '')) {
+                missingFields.push('سمت');
+            }
+            
+            for (const f of dynamicFields) {
+                if (f.is_required && !f.is_key && f.title !== 'نام' && f.title !== 'نام خانوادگی' && f.title !== 'شماره تماس' && f.title !== 'سمت') {
+                    let value = personnel[f.title];
+                    if (!value || value === '' || value === '-' || value === 'undefined') {
+                        missingFields.push(f.title);
+                    }
+                }
+            }
+            
+            if (missingFields.length > 0) {
+                showAlert(`فیلدهای اجباری تکمیل نشده: ${missingFields.join(', ')}`, 'error');
+                return;
+            }
+
+            const modalHtml = `<div id="confirmModal" class="modal active" style="display:flex; z-index:10000;">
+                <div class="modal-content" style="max-width: 450px;">
+                    <div class="modal-header"><h3>✓ تأیید کارکرد</h3><span class="close-modal" onclick="closeConfirmModal()">✖</span></div>
+                    <div style="margin-bottom: 20px;">آیا از تأیید کارکرد <strong>${escapeHtml(personnel.full_name || personnel.first_name + ' ' + personnel.last_name)}</strong> مطمئن هستید؟</div>
+                    <div class="form-group"><label>📝 توضیحات (اختیاری)</label><textarea id="confirmNote" rows="3" style="width:100%;"></textarea></div>
+                    <div style="display:flex; gap:10px;"><button class="btn-primary" onclick="confirmSubmitWork(${personnelId}, ${periodId})" style="background:#10b981; flex:1;">✓ تأیید</button><button class="btn-primary btn-clear" onclick="closeConfirmModal()" style="flex:1;">انصراف</button></div>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function closeConfirmModal() { const modal = document.getElementById('confirmModal'); if (modal) modal.remove(); }
+
+        async function confirmSubmitWork(personnelId, periodId) {
+            const note = document.getElementById('confirmNote')?.value || '';
+            closeConfirmModal();
+            try {
+                const res = await fetch('/api/work/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ personnel_id: personnelId, period_id: parseInt(periodId), note: note })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showAlert('✅ کارکرد با موفقیت تایید شد', 'success');
+                    await loadWorkStatusForPeriod(periodId);
+                    await loadAllData();
+                } else {
+                    showAlert(result.error || 'خطا در تایید کارکرد', 'error');
+                }
+            } catch(e) { 
+                console.error(e);
+                showAlert('خطا در ارتباط با سرور', 'error'); 
+            }
+        }
+
+        async function bulkSubmitWork() {
+            const periodId = document.getElementById('workPeriodSelect')?.value;
+            if (!periodId || periodId === '') {
+                showAlert('لطفاً ابتدا دوره را انتخاب کنید', 'error');
+                return;
+            }
+
+            const personnelToSubmit = [];
+            const failedPersonnel = [];
+            
+            for (const p of allPersonnel) {
+                if (p.period_id == periodId) {
+                    let status = workStatusCache[p.id]?.[periodId] || 'draft';
+                    if (status === 'draft' || status === 'revision') {
+                        let missingFields = [];
+                        
+                        if (!p.first_name || p.first_name === '' || p.first_name === '-') missingFields.push('نام');
+                        if (!p.last_name || p.last_name === '' || p.last_name === '-') missingFields.push('نام خانوادگی');
+                        
+                        const phoneField = dynamicFields.find(f => f.title === 'شماره تماس' && f.is_required);
+                        if (phoneField && (!p.phone || p.phone === '')) missingFields.push('شماره تماس');
+                        
+                        const positionField = dynamicFields.find(f => f.title === 'سمت' && f.is_required);
+                        if (positionField && (!p.position || p.position === '')) missingFields.push('سمت');
+                        
+                        for (const f of dynamicFields) {
+                            if (f.is_required && !f.is_key && f.title !== 'نام' && f.title !== 'نام خانوادگی' && f.title !== 'شماره تماس' && f.title !== 'سمت') {
+                                let value = p[f.title];
+                                if (!value || value === '' || value === '-' || value === 'undefined') {
+                                    missingFields.push(f.title);
+                                }
+                            }
+                        }
+                        
+                        if (missingFields.length === 0) {
+                            personnelToSubmit.push({ id: p.id, name: p.full_name || p.first_name + ' ' + p.last_name });
+                        } else {
+                            failedPersonnel.push({ name: p.full_name || p.first_name + ' ' + p.last_name, missing: missingFields });
+                        }
+                    }
+                }
+            }
+
+            if (personnelToSubmit.length === 0) {
+                if (failedPersonnel.length > 0) {
+                    let failedMessage = '❌ پرسنل‌های زیر فیلدهای اجباری را تکمیل نکرده‌اند:\n';
+                    failedPersonnel.slice(0, 5).forEach(f => {
+                        failedMessage += `- ${f.name}: ${f.missing.join(', ')}\n`;
+                    });
+                    if (failedPersonnel.length > 5) failedMessage += `و ${failedPersonnel.length - 5} نفر دیگر...`;
+                    showAlert(failedMessage, 'error');
+                } else {
+                    showAlert('هیچ پرسنلی برای تایید وجود ندارد', 'info');
+                }
+                return;
+            }
+
+            if (failedPersonnel.length > 0) {
+                let warningMessage = `${personnelToSubmit.length} پرسنل قابل تایید هستند.\n`;
+                warningMessage += `${failedPersonnel.length} پرسنل به دلیل تکمیل نبودن فیلدهای اجباری تایید نمی‌شوند.`;
+                if (!confirm(warningMessage + '\nآیا ادامه می‌دهید؟')) return;
+            }
+
+            bulkPersonnelIds = personnelToSubmit.map(p => p.id);
+            const modalHtml = `<div id="bulkConfirmModal" class="modal active" style="display:flex; z-index:10000;">
+                <div class="modal-content" style="max-width: 450px;">
+                    <div class="modal-header"><h3>✓ تایید گروهی کارکرد</h3><span class="close-modal" onclick="closeBulkConfirmModal()">✖</span></div>
+                    <div style="margin-bottom: 20px;"><strong>${personnelToSubmit.length} پرسنل</strong> برای تایید انتخاب شده‌اند.</div>
+                    <div class="form-group"><label>📝 توضیحات (اختیاری)</label><textarea id="bulkConfirmNote" rows="3" style="width:100%;"></textarea></div>
+                    <div style="display:flex; gap:10px;"><button class="btn-primary" onclick="confirmBulkSubmit(${periodId})" style="background:#10b981; flex:1;">✓ همه را تأیید کن</button><button class="btn-primary btn-clear" onclick="closeBulkConfirmModal()" style="flex:1;">انصراف</button></div>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function closeBulkConfirmModal() { const modal = document.getElementById('bulkConfirmModal'); if (modal) modal.remove(); }
+
+        async function confirmBulkSubmit(periodId) {
+            const note = document.getElementById('bulkConfirmNote')?.value || '';
+            const personnelIds = [...bulkPersonnelIds];
+            closeBulkConfirmModal();
+            if (!periodId || personnelIds.length === 0) { showAlert('هیچ پرسنلی برای تایید وجود ندارد', 'info'); return; }
+            showAlert(`در حال تایید ${personnelIds.length} پرسنل...`, 'info');
+            let successCount = 0;
+            for (const pid of personnelIds) {
+                try {
+                    const res = await fetch('/api/work/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ personnel_id: pid, period_id: parseInt(periodId), note: note })
+                    });
+                    const result = await res.json();
+                    if (result.success) successCount++;
+                } catch(e) { console.error(e); }
+            }
+            if (successCount > 0) {
+                showAlert(`✅ ${successCount} از ${personnelIds.length} پرسنل با موفقیت تایید شدند`, 'success');
+            } else {
+                showAlert(`❌ خطا در تایید پرسنل`, 'error');
+            }
+            await loadWorkStatusForPeriod(periodId);
+            await loadAllData();
+            bulkPersonnelIds = [];
+        }
+
+        // ========== بارگذاری دوره‌ها ==========
+        async function loadWorkPeriods() {
+            try {
+                const res = await fetch('/unit-supervisor/api/periods');
+                const allPeriods = await res.json();
+                const select = document.getElementById('workPeriodSelect');
+                if (select && allPeriods.length > 0) {
+                    let options = '<option value="">--- همه دوره‌ها ---</option>';
+                    let activePeriodId = null;
+                    for (const p of allPeriods) {
+                        const activeText = p.is_active ? ' (فعال)' : '';
+                        options += `<option value="${p.id}">${p.title} (${p.start_date} - ${p.end_date})${activeText}</option>`;
+                        if (p.is_active) activePeriodId = p.id;
+                    }
+                    select.innerHTML = options;
+                    if (activePeriodId) {
+                        select.value = activePeriodId;
+                        await loadWorkStatusForPeriod(activePeriodId);
+                    }
+                    await loadAllData();
+                } else if (select) {
+                    select.innerHTML = '<option value="">هیچ دوره‌ای تعریف نشده است</option>';
+                }
+            } catch(e) { console.error(e); showAlert('خطا در بارگذاری دوره‌ها', 'error'); }
+        }
+
+        // ========== بارگذاری داده‌ها ==========
+        async function refreshAll() { showAlert('در حال به‌روزرسانی...', 'info'); await Promise.all([loadAllData(), loadRequests()]); }
+
+        async function loadPeriods() {
+            try { 
+                const res = await fetch('/unit-supervisor/api/periods'); 
+                periods = await res.json(); 
+                populatePeriodSelects(); 
+            } catch(e) { console.error(e); }
+        }
+
+        function populatePeriodSelects() {
+            let html = '<option value="">انتخاب دوره...</option>';
+            for (const p of periods) {
+                html += `<option value="${p.id}">${p.title} (${p.start_date} - ${p.end_date})</option>`;
+            }
+            const addSel = document.getElementById('addPeriodId');
+            const editSel = document.getElementById('editPeriodId');
+            if (addSel) addSel.innerHTML = html;
+            if (editSel) { const cv = editSel.value; editSel.innerHTML = html; if(cv) editSel.value = cv; }
+        }
+
+        async function loadAllData() {
+            try {
+                const url = '/unit-supervisor/api/all-data';
+                const res = await fetch(url);
+                if(!res.ok) throw new Error();
+                const data = await res.json();
+                allPersonnel = data.personnel || [];
+                dynamicFields = data.dynamic_fields || [];
+                if(data.periods) {
+                    periods = data.periods;
+                    populatePeriodSelects();
+                }
+                const totalFields = data.stats.total_fields;
+                document.getElementById('totalFieldsCount').innerHTML = toPersianNumber(totalFields);
+                
+                await loadAllWorkStatuses();
+                
+                currentPage = 1;
+                renderTableHeader();
+                renderTable();
+                renderPagination();
+                updateSearchFieldSelect();
+                loadSavedThresholdFilter();
+                
+                setTimeout(() => {
+                    const selectedPeriodId = document.getElementById('workPeriodSelect')?.value;
+                    let temp = [...allPersonnel];
+                    if(selectedPeriodId && selectedPeriodId !== '') {
+                        temp = temp.filter(p => p.period_id == selectedPeriodId);
+                    }
+                    document.getElementById('totalPersonnel').innerHTML = toPersianNumber(temp.length);
+                    let completedCount = 0;
+                    for(const p of temp) {
+                        let filled = 0, total = 0;
+                        for(const f of dynamicFields) {
+                            if(!f.is_key && f.title !== 'نام' && f.title !== 'نام خانوادگی') {
+                                total++;
+                                if(p[f.title] && p[f.title] !== '') filled++;
+                            }
+                        }
+                        if(total > 0 && filled === total) completedCount++;
+                    }
+                    const completionPercent = temp.length > 0 ? Math.round((completedCount / temp.length) * 100) : 0;
+                    document.getElementById('completionPercent').innerHTML = toPersianNumber(completionPercent) + '%';
+                    document.getElementById('completionLabel').innerHTML = toPersianNumber(completionPercent) + '%';
+                    document.getElementById('incompleteCount').innerHTML = toPersianNumber(temp.length - completedCount);
+                    document.getElementById('progressFill').style.width = completionPercent + '%';
+                }, 100);
+            } catch(e) { console.error(e); showAlert('خطا در بارگذاری', 'error'); }
+        }
+
+        async function loadRequests() {
+            try {
+                const [addRes, deleteRes] = await Promise.all([fetch('/unit-supervisor/api/pending-requests'), fetch('/unit-supervisor/api/delete-requests')]);
+                pendingRequests = (await addRes.json()).requests || [];
+                deleteRequests = (await deleteRes.json()).requests || [];
+                renderRequests();
+            } catch(e) {}
+        }
+
+        async function cancelRequest(reqId) {
+            if(!confirm('لغو درخواست؟')) return;
+            try {
+                const res = await fetch('/unit-supervisor/api/cancel-request', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ request_id: reqId }) });
+                const result = await res.json();
+                if(result.success) { showAlert('درخواست لغو شد', 'success'); await loadRequests(); await loadAllData(); }
+                else showAlert(result.error, 'error');
+            } catch(e) { showAlert('خطا', 'error'); }
+        }
+
+        function renderRequests() {
+            const container = document.getElementById('requestsContainer');
+            let all = [];
+            for(const r of pendingRequests) all.push({ id:r.id, type:'add', title:r.full_name||r.national_code, national_code:r.national_code, created_at:r.created_at });
+            for(const r of deleteRequests) all.push({ id:r.id, type:'delete', title:r.full_name||r.national_code, national_code:r.national_code, created_at:r.created_at, delete_reason:r.delete_reason });
+            all.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+            if(all.length===0) { container.innerHTML='<div class="empty-requests">✅ هیچ درخواستی وجود ندارد</div>'; return; }
+            let html = '';
+            for(const r of all) {
+                const isDelete = r.type==='delete';
+                html += `<div class="request-card ${isDelete?'delete':''}"><div class="request-header"><div class="request-title">${isDelete?'🗑️':'➕'} ${r.title}</div><div class="request-badge">${isDelete?'درخواست حذف':'درخواست افزودن'}</div></div>
+                    <div class="request-details"><span>📋 کد ملی: ${r.national_code}</span><span>📅 تاریخ ثبت: ${r.created_at}</span></div>
+                    ${r.delete_reason ? `<div class="delete-reason">📝 علت حذف: ${r.delete_reason}</div>` : ''}
+                    <button class="btn-cancel-request" onclick="cancelRequest(${r.id})">✖ انصراف</button></div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        // ========== رندر جدول ==========
+        function toggleDropdown(element) {
+            document.querySelectorAll('.hamburger-dropdown').forEach(menu => {
+                if(menu !== element.nextElementSibling) menu.style.display = 'none';
+            });
+            const dropdown = element.nextElementSibling;
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+        document.addEventListener('click', function(e) {
+            if(!e.target.closest('.hamburger-menu')) {
+                document.querySelectorAll('.hamburger-dropdown').forEach(menu => menu.style.display = 'none');
+            }
+        });
+
+        function renderTableHeader() {
+            const thead = document.getElementById('tableHeader');
+            if(!thead) return;
+            let html = '<th style="width:35px;"><input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()"></th><th style="width:45px;">#</th>';
+            html += '<th>کد ملی</th>';
+            html += '<th>نام و نام خانوادگی</th>';
+            html += '<th>دوره</th>';
+            for(const f of dynamicFields) {
+                if(!f.is_key && f.title!=='نام' && f.title!=='نام خانوادگی') {
+                    const fieldTitle = f.title;
+                    const fieldType = f.field_type || 'text';
+                    html += `<th><div style="display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">
+                                <span>${fieldTitle}</span>
+                                <div class="hamburger-menu" style="position: relative; display: inline-block;">
+                                    <span class="hamburger-icon" style="cursor: pointer; font-size: 0.7rem; opacity: 0.6; display: inline-block;" onclick="event.stopPropagation(); toggleDropdown(this)">☰</span>
+                                    <div class="hamburger-dropdown" style="display: none; position: absolute; top: 100%; left: 0; background: white; min-width: 130px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; z-index: 1000; padding: 5px 0; white-space: nowrap;">
+                                        <div class="hamburger-dropdown-item" onclick="openBatchModal('${fieldTitle}')"><span>⚡</span> ویرایش گروهی</div>
+                                        <div class="hamburger-dropdown-item" onclick="createDynamicCard('${fieldTitle}', '${fieldTitle}')"><span>📊</span> ساخت کارت نظارتی</div>
+                                        <div class="hamburger-dropdown-item" onclick="openFilterModal('${fieldTitle}')"><span>🔍</span> فیلتر ستونی</div>
+                                        <div class="hamburger-dropdown-item" onclick="openThresholdModal('${fieldTitle}', '${fieldType}')"><span>🔢</span> فیلتر عددی</div>
+                                    </div>
+                                </div>
+                            </div></th>`;
+                }
+            }
+            html += '<th>وضعیت اطلاعات</th>';
+            html += '<th>عملیات</th>';
+            html += '<th>وضعیت کارکرد</th>';
+            html += '<th>تایید</th>';
+            thead.innerHTML = html;
+        }
+
+function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    if(!tbody) return;
+    
+    let temp = [...allPersonnel];
+    
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    if(search) {
+        temp = temp.filter(p => 
+            (p.full_name && p.full_name.toLowerCase().includes(search)) ||
+            (p.national_code && p.national_code.includes(search)) ||
+            (p.phone && p.phone.includes(search)) ||
+            (p.position && p.position.toLowerCase().includes(search))
+        );
+    }
+    
+    for(const [field, values] of Object.entries(currentFilters)) {
+        if(values.length) {
+            temp = temp.filter(p => values.includes(String(p[field])));
+        }
+    }
+    
+    if(advancedSearchField && advancedSearchValue) {
+        temp = temp.filter(p => {
+            let fieldValue = '';
+            if(advancedSearchField === 'full_name') {
+                fieldValue = (p.full_name || '').toLowerCase();
+            } else if(advancedSearchField === 'national_code') {
+                fieldValue = (p.national_code || '').toLowerCase();
+            } else if(advancedSearchField === 'phone') {
+                fieldValue = (p.phone || '').toLowerCase();
+            } else if(advancedSearchField === 'position') {
+                fieldValue = (p.position || '').toLowerCase();
+            } else {
+                fieldValue = (p[advancedSearchField] || '').toString().toLowerCase();
+            }
+            return fieldValue.includes(advancedSearchValue);
+        });
+    }
+    
+    const selectedPeriodId = document.getElementById('workPeriodSelect')?.value;
+    
+    if(selectedPeriodId && selectedPeriodId !== '') {
+        temp = temp.filter(p => p.period_id == selectedPeriodId);
+    }
+    
+    filteredPersonnel = temp;
+    totalPages = Math.ceil(filteredPersonnel.length / perPage);
+    currentPage = Math.min(currentPage, totalPages);
+    if(currentPage < 1) currentPage = 1;
+    
+    const hasFilters = Object.keys(currentFilters).length > 0 || search || (advancedSearchField && advancedSearchValue);
+    const clearBtn = document.getElementById('clearFiltersBtn');
+    if(clearBtn) clearBtn.style.display = hasFilters ? 'inline-block' : 'none';
+    
+    const start = (currentPage-1)*perPage;
+    const end = Math.min(start + perPage, filteredPersonnel.length);
+    const pageData = filteredPersonnel.slice(start, end);
+    
+    if(pageData.length === 0) { 
+        tbody.innerHTML = '<tr><td colspan="20" style="text-align:center;padding:30px;">📭 هیچ پرسنلی ثبت نشده است<\/td><\/tr>';
+        return; 
+    }
+    
+    let html = '';
+    for(let i = 0; i < pageData.length; i++) {
+        const p = pageData[i];
+        const isSelected = selectedRows.has(p.id.toString());
+        const totalFields = dynamicFields.filter(f => !f.is_key && f.title !== 'نام' && f.title !== 'نام خانوادگی').length;
+        let filled = 0;
+        for(const f of dynamicFields) {
+            if(!f.is_key && f.title !== 'نام' && f.title !== 'نام خانوادگی' && p[f.title] && p[f.title] !== '' && p[f.title] !== '-') {
+                filled++;
+            }
+        }
+        const isComplete = totalFields > 0 && filled === totalFields;
+        const statusClass = isComplete ? 'completed' : 'incomplete';
+        const statusText = isComplete ? '✓ تکمیل شده' : '⚠️ ناقص';
+        
+        let workStatus = 'draft';
+        let workStatusText = '📝 پیش‌نویس';
+        let workStatusClass = 'status-draft';
+        
+        if(selectedPeriodId && selectedPeriodId !== '') {
+            if(workStatusCache[p.id] && workStatusCache[p.id][selectedPeriodId]) {
+                workStatus = workStatusCache[p.id][selectedPeriodId];
+            }
+        } else if(p.period_id && workStatusCache[p.id] && workStatusCache[p.id][p.period_id]) {
+            workStatus = workStatusCache[p.id][p.period_id];
+        }
+        
+        switch(workStatus) {
+            case 'draft': workStatusText = '📝 پیش‌نویس'; workStatusClass = 'status-draft'; break;
+            case 'unit_pending': workStatusText = '⏳ در انتظار تایید مدیر اداره'; workStatusClass = 'status-pending'; break;
+            case 'dept_pending': workStatusText = '⏳ در انتظار تایید مدیر سازمان'; workStatusClass = 'status-pending'; break;
+            case 'org_approved': workStatusText = '✅ تایید نهایی شده'; workStatusClass = 'status-approved'; break;
+            case 'revision': workStatusText = '🔄 نیاز به اصلاح دارد'; workStatusClass = 'status-revision'; break;
+        }
+        
+        const canEdit = (workStatus === 'draft' || workStatus === 'revision');
+        const canDelete = (workStatus === 'draft' || workStatus === 'revision');
+        
+        let showApproveButton = false;
+        let showPendingBadge = false;
+        
+        if(selectedPeriodId && selectedPeriodId !== '') {
+            showApproveButton = (workStatus === 'draft' || workStatus === 'revision');
+            showPendingBadge = (workStatus === 'unit_pending' || workStatus === 'dept_pending');
+        } else {
+            showApproveButton = false;
+            showPendingBadge = (workStatus === 'unit_pending' || workStatus === 'dept_pending');
+        }
+        
+        html += '<tr data-id="' + p.id + '" data-index="' + (start + i) + '" onclick="openEditSidebarAtIndex(' + (start + i) + ')" oncontextmenu="showContextMenu(event,' + p.id + ',' + (start + i) + '); return false;">';
+        html += '<td><input type="checkbox" class="row-checkbox" value="' + p.id + '" ' + (isSelected ? 'checked' : '') + ' onclick="event.stopPropagation(); toggleRowSelection(this,' + p.id + ')"></td>';
+        html += '<td>' + toPersianNumber(start + i + 1) + '</td>';
+        html += '<td>' + p.national_code + ' <span style="cursor:pointer;color:#667eea;" onclick="event.stopPropagation(); showPersonnelHistory(' + p.id + ')">📜</span></td>';
+        html += '<td><strong>' + (p.full_name || (p.first_name || '') + ' ' + (p.last_name || '')) + '</strong></td>';
+        html += '<td>' + (p.period_title || '-') + '</td>';
+        
+        for(const f of dynamicFields) {
+            if(!f.is_key && f.title !== 'نام' && f.title !== 'نام خانوادگی') {
+                let val = p[f.title] || '-';
+                if(val === '' || val === undefined) val = '-';
+                html += '<td>' + val + '</td>';
+            }
+        }
+        
+        html += '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>';
+        html += '<td><button class="btn-icon btn-edit" ' + (!canEdit ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : '') + ' onclick="' + (canEdit ? 'event.stopPropagation(); openEditSidebarAtIndex(' + (start + i) + ')' : 'event.stopPropagation();') + '">✏️</button>';
+        html += '<button class="btn-icon btn-delete" ' + (!canDelete ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : '') + ' onclick="' + (canDelete ? 'event.stopPropagation(); requestDeletePersonnel(' + p.id + ')' : 'event.stopPropagation();') + '">🗑️</button></td>';
+        html += '<td><span class="work-status-badge ' + workStatusClass + '">' + workStatusText + '</span></td>';
+        html += '<td>';
+        
+        if(showApproveButton) {
+            html += '<button class="btn-primary btn-sm" style="background:#10b981; padding:4px 12px;" onclick="event.stopPropagation(); submitWorkForPersonnel(' + p.id + ')">✓ تایید کارکرد</button>';
+        } else if(showPendingBadge) {
+            html += '<span class="badge" style="background:#fef3c7; color:#d97706;">در انتظار تایید</span>';
+        } else if(workStatus === 'org_approved') {
+            html += '<span class="badge" style="background:#dcfce7; color:#16a34a;">تایید نهایی</span>';
+        } else {
+            html += '<span class="badge" style="background:#e2e8f0; color:#64748b;">غیرقابل تایید</span>';
+        }
+        
+        html += '<\/td><\/tr>';
+    }
+    tbody.innerHTML = html;
+    updateSelectedCount();
+    if (thresholdFilter) setTimeout(() => applyThresholdHighlight(), 50);
+}
+
+        // ========== ویرایش گروهی ==========
+        function openBatchModal(field) {
+            if(!filteredPersonnel.length) { showAlert('هیچ پرسنلی برای ویرایش وجود ندارد', 'error'); return; }
+            currentBatchField = field;
+            const modalHtml = `<div id="batchModalCustom" class="batch-modal-custom">
+                <h3>✏️ ویرایش گروهی ${field}</h3>
+                <div>تعداد: ${filteredPersonnel.length} نفر</div>
+                <div class="form-group"><label>مقدار جدید برای همه</label><input type="text" id="batchValue" placeholder="مقدار مورد نظر..."></div>
+                <div style="display:flex; gap:8px;"><button class="btn-primary" id="applyBatchBtn" style="flex:1;">✓ اعمال بر روی همه</button><button class="btn-primary btn-clear" id="cancelBatchBtn" style="flex:1;">انصراف</button></div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            document.getElementById('applyBatchBtn').onclick = async function() {
+                const val = document.getElementById('batchValue').value.trim();
+                if(!val) { showAlert('مقدار را وارد کنید', 'error'); return; }
+                const updates = filteredPersonnel.map(p => ({ id: p.id, value: val }));
+                const btn = document.getElementById('applyBatchBtn');
+                btn.disabled = true;
+                btn.innerText = 'در حال اعمال...';
+                try {
+                    const res = await fetch('/unit-supervisor/api/personnel/batch-update', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ field: currentBatchField, updates: updates }) });
+                    const r = await res.json();
+                    if(r.success) { showAlert(`✅ برای ${r.count} پرسنل اعمال شد`, 'success'); await loadAllData(); document.getElementById('batchModalCustom').remove(); }
+                    else showAlert(r.error, 'error');
+                } catch(e) { showAlert('خطا در ارتباط با سرور', 'error'); }
+                finally { btn.disabled = false; }
+            };
+            document.getElementById('cancelBatchBtn').onclick = function() { document.getElementById('batchModalCustom').remove(); };
+        }
+
+        // ========== انتخاب سطرها ==========
+        function toggleRowSelection(cb, id) { if(cb.checked) selectedRows.add(id.toString()); else selectedRows.delete(id.toString()); updateSelectedCount(); renderTable(); }
+        function toggleSelectAll() {
+            const sa = document.getElementById('selectAllCheckbox');
+            const start=(currentPage-1)*perPage, end=Math.min(start+perPage, filteredPersonnel.length);
+            for(let i=start;i<end;i++) { const id = filteredPersonnel[i].id.toString(); if(sa.checked) selectedRows.add(id); else selectedRows.delete(id); }
+            renderTable(); updateSelectedCount();
+        }
+        function updateSelectedCount() {
+            const c=selectedRows.size, bar=document.querySelector('.selected-bar');
+            if(c>0) {
+                if(!bar) { 
+                    const tb=document.querySelector('.table-toolbar'), b=document.createElement('div'); 
+                    b.className='selected-bar'; 
+                    b.innerHTML='<span>' + c + ' پرسنل انتخاب شده</span><button class="btn-primary btn-clear" onclick="bulkDeleteSelected()" style="background:#ef4444;">🗑️ حذف گروهی</button>'; 
+                    tb.parentNode.insertBefore(b, tb.nextSibling); 
+                }
+                else bar.querySelector('span').innerText = c + ' پرسنل انتخاب شده';
+            } else if(bar) bar.remove();
+        }
+        async function bulkDeleteSelected() {
+            const ids = Array.from(selectedRows);
+            if(!ids.length) return;
+            const reason = prompt('📝 علت حذف ' + ids.length + ' پرسنل:', '');
+            if(reason === null || !reason.trim()) return;
+            if(!confirm(ids.length + ' پرسنل حذف شوند؟')) return;
+            let sc = 0;
+            for(const id of ids) {
+                try {
+                    const res = await fetch('/unit-supervisor/api/request-delete', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ personnel_id: parseInt(id), delete_reason: reason }) });
+                    const r = await res.json();
+                    if(r.success) sc++;
+                } catch(e){}
+            }
+            showAlert(sc + ' از ' + ids.length + ' درخواست حذف ثبت شد', sc>0?'success':'error');
+            selectedRows.clear(); await loadRequests(); await loadAllData(); renderTable(); updateSelectedCount();
+        }
+        
+        async function requestDeletePersonnel(id) {
+            if(windowDeleteLock) { showAlert('لطفاً صبر کنید...', 'info'); return; }
+            
+            const selectedPeriodId = document.getElementById('workPeriodSelect')?.value;
+            let status = 'draft';
+            if(selectedPeriodId && selectedPeriodId !== '' && workStatusCache[id] && workStatusCache[id][selectedPeriodId]) {
+                status = workStatusCache[id][selectedPeriodId];
+            } else if(!selectedPeriodId || selectedPeriodId === '') {
+                const personnel = allPersonnel.find(p => p.id == id);
+                if(personnel && personnel.period_id && workStatusCache[id] && workStatusCache[id][personnel.period_id]) {
+                    status = workStatusCache[id][personnel.period_id];
+                }
+            }
+            if(status !== 'draft' && status !== 'revision') {
+                showAlert('⚠️ این پرسنل در وضعیت تایید شده قرار دارد و قابل حذف نیست', 'error');
+                return;
+            }
+            
+            const reason = prompt('📝 علت حذف این پرسنل:');
+            if(reason === null || !reason.trim()) return;
+            if(!confirm('درخواست حذف به ادمین ارسال شود؟')) return;
+            windowDeleteLock = true;
+            try {
+                const res = await fetch('/unit-supervisor/api/request-delete', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ personnel_id: id, delete_reason: reason }) });
+                const result = await res.json();
+                if(result.success) { showAlert(result.message, 'success'); await loadRequests(); await loadAllData(); renderTable(); }
+                else showAlert(result.error, 'error');
+            } catch(e) { showAlert('خطا', 'error'); }
+            finally { setTimeout(() => { windowDeleteLock = false; }, 500); }
+        }
+
+        // ========== ویرایش پرسنل ==========
+        async function openEditSidebarAtIndex(idx) {
+            if(idx < 0 || idx >= filteredPersonnel.length) return;
+            const p = filteredPersonnel[idx];
+            const selectedPeriodId = document.getElementById('workPeriodSelect')?.value;
+            
+            let canEdit = false;
+            if(selectedPeriodId && selectedPeriodId !== '') {
+                let status = workStatusCache[p.id]?.[selectedPeriodId] || 'draft';
+                canEdit = (status === 'draft' || status === 'revision');
+            } else {
+                let status = 'draft';
+                if(p.period_id && workStatusCache[p.id] && workStatusCache[p.id][p.period_id]) {
+                    status = workStatusCache[p.id][p.period_id];
+                }
+                canEdit = (status === 'draft' || status === 'revision');
+            }
+            
+            currentEditIndex = idx;
+            try {
+                const res = await fetch('/unit-supervisor/api/personnel/' + p.id);
+                const fullData = await res.json();
+                document.getElementById('sidebarSubtitle').innerHTML = (p.full_name || (p.first_name || '') + ' ' + (p.last_name || '')) + ' - ' + p.national_code + (!canEdit ? ' (غیرقابل ویرایش)' : '');
+                document.getElementById('editId').value = p.id;
+                let html = '<div class="form-group"><label>کد ملی</label><input type="text" value="' + fullData.national_code + '" readonly style="background:#f1f5f9;"></div>';
+                html += '<div class="form-group"><label>نام</label><input type="text" id="editFirstName" value="' + escapeHtml(fullData.first_name||'') + '" ' + (!canEdit ? 'disabled' : '') + '></div>';
+                html += '<div class="form-group"><label>نام خانوادگی</label><input type="text" id="editLastName" value="' + escapeHtml(fullData.last_name||'') + '" ' + (!canEdit ? 'disabled' : '') + '></div>';
+                html += '<div class="form-group"><label>شماره تماس</label><input type="text" id="editPhone" value="' + escapeHtml(fullData.phone||'') + '" ' + (!canEdit ? 'disabled' : '') + '></div>';
+                html += '<div class="form-group"><label>سمت</label><input type="text" id="editPosition" value="' + escapeHtml(fullData.position||'') + '" ' + (!canEdit ? 'disabled' : '') + '></div>';
+                for(const f of dynamicFields) {
+                    if(!f.is_key && f.title !== 'نام' && f.title !== 'نام خانوادگی') {
+                        let val = fullData[f.title] || '';
+                        html += '<div class="form-group"><label>' + f.title + '</label><input type="text" id="edit_' + f.id + '" value="' + escapeHtml(val) + '" ' + (!canEdit ? 'disabled' : '') + '></div>';
+                    }
+                }
+                document.getElementById('editFieldsContainer').innerHTML = html;
+                const periodSelect = document.getElementById('editPeriodId');
+                if(periodSelect) {
+                    periodSelect.value = p.period_id || '';
+                    if(!canEdit) periodSelect.disabled = true;
+                    else periodSelect.disabled = false;
+                }
+                const saveBtn = document.querySelector('.sidebar-actions .btn-save');
+                if(saveBtn) {
+                    if(!canEdit) saveBtn.style.display = 'none';
+                    else saveBtn.style.display = 'block';
+                }
+                document.getElementById('prevBtn').disabled = (idx === 0);
+                document.getElementById('nextBtn').disabled = (idx === filteredPersonnel.length - 1);
+                document.getElementById('editSidebar').classList.add('open');
+                document.getElementById('overlay').classList.add('active');
+            } catch(e) { console.error(e); showAlert('خطا', 'error'); }
+        }
+        
+        function navigatePersonnel(d) { const ni = currentEditIndex + d; if(ni >= 0 && ni < filteredPersonnel.length) openEditSidebarAtIndex(ni); }
+        function closeEditSidebar() { document.getElementById('editSidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('active'); currentEditIndex = -1; }
+        
+        document.getElementById('editForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const periodId = document.getElementById('editPeriodId').value;
+            const data = { 
+                first_name: document.getElementById('editFirstName').value, 
+                last_name: document.getElementById('editLastName').value, 
+                phone: document.getElementById('editPhone').value, 
+                position: document.getElementById('editPosition').value, 
+                period_id: periodId || null 
+            };
+            for(const f of dynamicFields) { 
+                const inp = document.getElementById('edit_' + f.id); 
+                if(inp && inp.value) data[f.title] = inp.value; 
+            }
+            const btn = e.submitter;
+            if(btn) { btn.disabled = true; btn.innerText = 'در حال ذخیره...'; }
+            try {
+                const res = await fetch('/unit-supervisor/api/personnel/' + id + '/edit', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+                const result = await res.json();
+                if(result.success) {
+                    showAlert('✅ ذخیره شد', 'success');
+                    await loadAllData();
+                    closeEditSidebar();
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch(err) { console.error(err); showAlert('خطا در ارتباط با سرور', 'error'); } 
+            finally { if(btn) { btn.disabled = false; btn.innerText = '💾 ذخیره (Ctrl+S)'; } }
+        });
+
+        // ========== افزودن پرسنل ==========
+        function openAddPersonnelModal() {
+            document.getElementById('addNationalCode').value = '';
+            document.getElementById('addNote').value = '';
+            document.getElementById('addPeriodId').value = '';
+            let html = '';
+            for (const f of dynamicFields) {
+                if (f.is_key === true) continue;
+                if (f.is_active === false) continue;
+                html += '<div class="form-group"><label>' + f.title + (f.is_required ? ' <span style="color:#ef4444;">*</span>' : '') + '</label><input type="text" id="add_field_' + f.id + '" placeholder="' + f.title + '"></div>';
+            }
+            document.getElementById('dynamicFieldsContainer').innerHTML = html;
+            document.getElementById('addPersonnelModal').classList.add('active');
+        }
+        function closeAddModal() { document.getElementById('addPersonnelModal').classList.remove('active'); }
+        document.getElementById('addPersonnelForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nationalCode = document.getElementById('addNationalCode').value.trim();
+            const periodId = document.getElementById('addPeriodId').value;
+            if (!nationalCode) { showAlert('لطفاً کد ملی را وارد کنید', 'error'); return; }
+            if (!/^\d{10}$/.test(nationalCode)) { showAlert('کد ملی باید دقیقاً 10 رقم باشد', 'error'); return; }
+            if (!periodId) { showAlert('لطفاً دوره کارکرد را انتخاب کنید', 'error'); return; }
+            const data = { period_id: parseInt(periodId), national_code: nationalCode, note: document.getElementById('addNote').value };
+            for (const f of dynamicFields) {
+                if (f.is_key) continue;
+                const inp = document.getElementById('add_field_' + f.id);
+                if (inp && inp.value) data[f.title] = inp.value;
+                else if (f.is_required) { showAlert('لطفاً فیلد "' + f.title + '" را پر کنید', 'error'); return; }
+            }
+            if (allPersonnel.some(p => p.national_code === nationalCode && p.period_id == periodId)) {
+                showAlert('این کد ملی قبلاً در دوره انتخاب شده ثبت شده است', 'error');
+                return;
+            }
+            if (pendingRequests.some(r => r.national_code === nationalCode)) {
+                showAlert('درخواست افزودن برای این کد ملی قبلاً ثبت شده است', 'error');
+                return;
+            }
+            try {
+                const res = await fetch('/unit-supervisor/api/request-add', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+                const result = await res.json();
+                if (result.success) { showAlert('✅ درخواست ثبت شد', 'success'); closeAddModal(); loadRequests(); loadAllData(); }
+                else showAlert(result.error, 'error');
+            } catch(e) { console.error(e); showAlert('خطا در ارتباط با سرور', 'error'); }
+        });
+
+function updateMessageBadgeFromStorage() {
+    const count = localStorage.getItem('unread_messages_count');
+    const badge = document.getElementById('messageBadge');
+    if (badge && count && parseInt(count) > 0) {
+        badge.style.display = 'inline-block';
+        badge.innerText = parseInt(count) > 99 ? '99+' : count;
+    } else if (badge) {
+        badge.style.display = 'none';
+    }
+}
+
+// هر 30 ثانیه یکبار چک کن
+setInterval(() => {
+    fetch('/api/work/messages')
+        .then(res => res.json())
+        .then(data => {
+            localStorage.setItem('unread_messages_count', data.unread_count || 0);
+            updateMessageBadgeFromStorage();
+        })
+        .catch(e => console.error(e));
+}, 30000);
+
+// بارگذاری اولیه
+updateMessageBadgeFromStorage();
+
+        // ========== آپلود اکسل ==========
+        function openUploadExcelModal() { document.getElementById('uploadExcelModal').classList.add('active'); }
+        function closeUploadExcelModal() { document.getElementById('uploadExcelModal').classList.remove('active'); }
+        document.getElementById('uploadExcelForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const f = document.getElementById('excelFile');
+            if(!f.files[0]) { showAlert('فایل انتخاب کنید', 'error'); return; }
+            const fd = new FormData(); fd.append('excel_file', f.files[0]);
+            showAlert('در حال پردازش...', 'info');
+            try {
+                const res = await fetch('/admin/personnel/import-excel', { method:'POST', body:fd });
+                const r = await res.json();
+                if(r.success) { showAlert(r.message, 'success'); closeUploadExcelModal(); loadAllData(); }
+                else showAlert(r.error, 'error');
+            } catch(e) { showAlert('خطا', 'error'); }
+            f.value = '';
+        });
+
+        // ========== منوی راست کلیک ==========
+        function showContextMenu(e, id, idx) { 
+            e.preventDefault(); 
+            contextMenuId = id; 
+            contextMenuIdx = idx; 
+            const m = document.getElementById('contextMenu'); 
+            if(m){ 
+                m.style.left = e.pageX + 'px'; 
+                m.style.top = e.pageY + 'px'; 
+                m.classList.add('active'); 
+            } 
+        }
+        function hideContextMenu() { const m = document.getElementById('contextMenu'); if(m) m.classList.remove('active'); }
+        function contextMenuEdit() { if(contextMenuIdx !== null) openEditSidebarAtIndex(contextMenuIdx); hideContextMenu(); }
+        async function contextMenuDelete() { if(contextMenuId) await requestDeletePersonnel(contextMenuId); hideContextMenu(); }
+        function contextMenuCopy() { 
+            if(contextMenuId){ 
+                const p = filteredPersonnel.find(p => p.id == contextMenuId); 
+                if(p) navigator.clipboard.writeText(p.full_name + '\nکد ملی: ' + p.national_code + '\nشماره تماس: ' + (p.phone || '') + '\nسمت: ' + (p.position || '')); 
+                showAlert('کپی شد','success'); 
+            } 
+            hideContextMenu(); 
+        }
+        document.addEventListener('click', hideContextMenu);
+        
+        function exportToExcel() {
+            const btn = document.querySelector('.btn-excel');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ در حال آماده‌سازی فایل...';
+            btn.disabled = true;
+            fetch('/unit-supervisor/export-excel')
+                .then(res => {
+                    if (!res.ok) throw new Error('خطا در دریافت فایل');
+                    return res.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'personnel_report.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    showAlert('✅ فایل با موفقیت دانلود شد', 'success');
+                })
+                .catch(err => { console.error(err); showAlert('❌ خطا در دانلود فایل', 'error'); })
+                .finally(() => { btn.innerHTML = originalText; btn.disabled = false; });
+        }
+
+        // ========== فیلترهای عمومی ==========
+        function clearAllFilters() {
+            currentFilters = {};
+            advancedSearchField = null;
+            advancedSearchValue = null;
+            document.getElementById('searchInput').value = '';
+            document.getElementById('advancedSearchInput').value = '';
+            document.getElementById('clearAdvancedSearchBtn').style.display = 'none';
+            document.getElementById('searchFieldSelect').value = '';
+            filteredPersonnel = [...allPersonnel];
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+            document.getElementById('clearFiltersBtn').style.display = 'none';
+            showAlert('تمامی فیلترها پاک شد', 'success');
+        }
+        document.getElementById('searchInput').addEventListener('input', renderTable);
+
+        // ========== صفحه‌بندی ==========
+        function renderPagination() {
+            const cont = document.getElementById('paginationButtons');
+            if(!cont) return;
+            if(totalPages <= 1) { cont.innerHTML = ''; document.getElementById('pageInfo').innerHTML = 'نمایش 1 - ' + toPersianNumber(filteredPersonnel.length); return; }
+            let html = '<button class="pagination-btn" onclick="goToPage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>‹ قبلی</button>';
+            let start = Math.max(1, currentPage - 2), end = Math.min(totalPages, currentPage + 2);
+            if(start > 1) html += '<button class="pagination-btn" onclick="goToPage(1)">1</button>';
+            if(start > 2) html += '<span>...</span>';
+            for(let i = start; i <= end; i++) html += '<button class="pagination-btn ' + (i === currentPage ? 'active' : '') + '" onclick="goToPage(' + i + ')">' + i + '</button>';
+            if(end < totalPages - 1) html += '<span>...</span>';
+            if(end < totalPages) html += '<button class="pagination-btn" onclick="goToPage(' + totalPages + ')">' + totalPages + '</button>';
+            html += '<button class="pagination-btn" onclick="goToPage(' + (currentPage + 1) + ')" ' + (currentPage === totalPages ? 'disabled' : '') + '>بعدی ›</button>';
+            cont.innerHTML = html;
+            const startR = (currentPage - 1) * perPage + 1, endR = Math.min(currentPage * perPage, filteredPersonnel.length);
+            document.getElementById('pageInfo').innerHTML = 'نمایش ' + toPersianNumber(startR) + ' - ' + toPersianNumber(endR) + ' از ' + toPersianNumber(filteredPersonnel.length);
+        }
+        function goToPage(p) { if(p < 1 || p > totalPages) return; currentPage = p; renderTable(); renderPagination(); }
+        function changePerPage() { perPage = parseInt(document.getElementById('perPageSelect').value); currentPage = 1; renderTable(); renderPagination(); }
+
+        // ========== کیبورد ==========
+        document.addEventListener('keydown', e => {
+            if(e.ctrlKey && e.key === 's') { e.preventDefault(); if(document.getElementById('editSidebar').classList.contains('open')) document.getElementById('editForm').dispatchEvent(new Event('submit')); }
+            else if(e.ctrlKey && e.key === 'f') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+            else if(e.key === 'F5') { e.preventDefault(); refreshAll(); }
+            else if(e.key === 'Escape') { 
+                closeEditSidebar(); 
+                const fm = document.getElementById('filterModalCustom'); if(fm) fm.remove();
+                const bm = document.getElementById('batchModalCustom'); if(bm) bm.remove();
+                const hm = document.getElementById('historyModal'); if(hm) hm.remove();
+                closeAddModal(); 
+                closeUploadExcelModal(); 
+                closeHelpModal(); 
+                closeThresholdModal(); 
+            }
+        });
+
+        // ========== Event Listeners ==========
+        document.getElementById('addPersonnelModal').addEventListener('click', e => { if(e.target === e.currentTarget) closeAddModal(); });
+        document.getElementById('uploadExcelModal').addEventListener('click', e => { if(e.target === e.currentTarget) closeUploadExcelModal(); });
+        document.getElementById('searchInput').addEventListener('input', renderTable);
+
+        const advancedBtn = document.getElementById('advancedSearchBtn');
+        const clearAdvancedBtn = document.getElementById('clearAdvancedSearchBtn');
+        const advancedInput = document.getElementById('advancedSearchInput');
+
+        if(advancedBtn) {
+            advancedBtn.removeEventListener('click', performAdvancedSearch);
+            advancedBtn.addEventListener('click', performAdvancedSearch);
+        }
+        if(clearAdvancedBtn) {
+            clearAdvancedBtn.removeEventListener('click', clearAdvancedSearch);
+            clearAdvancedBtn.addEventListener('click', clearAdvancedSearch);
+        }
+        if(advancedInput) {
+            advancedInput.removeEventListener('keypress', advancedInput._listener);
+            advancedInput.addEventListener('keypress', function(e) {
+                if(e.key === 'Enter') performAdvancedSearch();
+            });
+        }
+
+        const workPeriodSelect = document.getElementById('workPeriodSelect');
+        if(workPeriodSelect) {
+            workPeriodSelect.addEventListener('change', async function() {
+                const periodId = this.value;
+                if(periodId && periodId !== '') {
+                    await loadWorkStatusForPeriod(periodId);
+                    await loadAllData();
+                    renderTable();
+                } else {
+                    await loadAllData();
+                }
+            });
+        }
+
+        // ========== اجرا ==========
+        loadSavedCards();
+        loadPeriods();
+        loadRequests();
+        loadWorkPeriods();
+        loadAllData();
+        loadNotifications();
+        loadMessages();
+        setInterval(loadNotifications, 30000);
+        setInterval(loadMessages, 30000);
+    </script>
+	<script>
+    function updateDateTime() {
+        const now = new Date();
+        const persianDate = new Intl.DateTimeFormat('fa-IR', { 
+            year: 'numeric', month: 'long', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        }).format(now);
+        const el = document.getElementById('userDateTime');
+        if (el) el.innerHTML = `📅 ${persianDate}`;
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+</script>
+</body>
+</html>
