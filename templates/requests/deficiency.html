@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>درخواست ثبت نواقص - سامانه آوان</title>
+    <script src="/static/js/header.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif; background: #f1f5f9; }
+        .main-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 0 32px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #f59e0b, #ea580c); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .logo { font-size: 1.3rem; font-weight: 600; color: white; }
+        .logo span { color: #f59e0b; }
+        .user-area { display: flex; align-items: center; gap: 20px; }
+        .user-info { text-align: left; }
+        .user-name { font-weight: 600; font-size: 0.9rem; color: white; }
+        .user-datetime { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+        .btn-logout {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-logout:hover { background: #ef4444 !important; transform: translateY(-2px); font-weight: 600 !important; }
+        .container { max-width: 600px; margin: 0 auto; padding: 24px; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #475569;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+        }
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .form-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .form-group label .required { color: #ef4444; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        .radio-group {
+            display: flex;
+            gap: 24px;
+            padding: 8px 0;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.2s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .btn-cancel { background: #64748b; margin-top: 8px; }
+        .alert {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        .alert-success { background: #f0fdf4; color: #16a34a; border-right: 4px solid #16a34a; }
+        .alert-error { background: #fef2f2; color: #dc2626; border-right: 4px solid #dc2626; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-header">
+    <div class="logo-area">
+        <div class="logo-icon">📊</div>
+        <div class="logo">سامانه کارکرد <span>آوان</span></div>
+    </div>
+    <div class="user-area">
+        <div class="user-info">
+            <div class="user-name">{{ current_user.get_full_name() }}</div>
+            <div class="user-datetime" id="userDateTime">📅 در حال بارگذاری...</div>
+        </div>
+        <a href="/logout" class="btn-logout">خروج</a>
+    </div>
+</div>
+
+<div class="container">
+    <a href="/requests" class="back-link">← بازگشت به لیست درخواست‌ها</a>
+    
+    <div class="form-card">
+        <div class="form-title">⚠️ ثبت نواقص (تأخیر / تعجیل)</div>
+        
+        <div id="alertContainer"></div>
+        
+        <form id="deficiencyForm">
+            <div class="form-group">
+                <label>تاریخ استفاده <span class="required">*</span></label>
+                <input type="text" id="date" placeholder="مثال: ۱۴۰۳/۱۱/۰۱" required>
+                <small style="color:#64748b;">فرمت: سال/ماه/روز (شمسی)</small>
+            </div>
+            
+            <div class="form-group">
+                <label>زمان ورود / خروج <span class="required">*</span></label>
+                <input type="time" id="time" required>
+            </div>
+            
+            <div class="form-group">
+                <label>نوع نقص <span class="required">*</span></label>
+                <div class="radio-group">
+                    <label><input type="radio" name="deficiency_type" value="ورود" checked> 🚪 تأخیر در ورود</label>
+                    <label><input type="radio" name="deficiency_type" value="خروج"> 🚪 تعجیل در خروج</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>توضیحات <span class="required">*</span></label>
+                <textarea id="description" rows="4" placeholder="توضیح دلیل تأخیر یا تعجیل..." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn-submit">📨 ارسال درخواست</button>
+            <button type="button" class="btn-submit btn-cancel" onclick="location.href='/requests'">انصراف</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toPersianNumber(num) {
+        if (num === undefined || num === null) return '۰';
+        const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+        return String(num).replace(/\d/g, x => persianDigits[parseInt(x)]);
+    }
+
+    function showAlert(msg, type) {
+        const container = document.getElementById('alertContainer');
+        container.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+        setTimeout(() => container.innerHTML = '', 3000);
+    }
+    
+    document.getElementById('deficiencyForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const date = document.getElementById('date').value.trim();
+        const time = document.getElementById('time').value;
+        const deficiency_type = document.querySelector('input[name="deficiency_type"]:checked').value;
+        const description = document.getElementById('description').value.trim();
+        
+        if (!date || !time || !description) {
+            showAlert('لطفاً تمام فیلدهای الزامی را پر کنید', 'error');
+            return;
+        }
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'در حال ارسال...';
+        
+        try {
+            const res = await fetch('/api/requests/deficiency/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    date: date,
+                    time: time,
+                    type: deficiency_type,
+                    description: description
+                })
+            });
+            
+            const result = await res.json();
+            if (result.success) {
+                showAlert('✅ درخواست ثبت نقص با موفقیت ثبت شد', 'success');
+                setTimeout(() => {
+                    window.location.href = '/requests';
+                }, 1500);
+            } else {
+                showAlert(result.error, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerText = '📨 ارسال درخواست';
+            }
+        } catch(e) {
+            showAlert('خطا در ارتباط با سرور', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerText = '📨 ارسال درخواست';
+        }
+    });
+    
+    function updateDateTime() {
+        const now = new Date();
+        const persianDate = new Intl.DateTimeFormat('fa-IR', {
+            year: 'numeric', month: 'long', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        }).format(now);
+        const el = document.getElementById('userDateTime');
+        if (el) el.innerHTML = `📅 ${persianDate}`;
+    }
+    
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+</script>
+</body>
+</html>

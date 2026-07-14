@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ form.title }} - سامانه آوان</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+            background: #f1f5f9;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 0 32px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo { font-size: 1.3rem; font-weight: 700; }
+        .logo span { color: #a78bfa; }
+        
+        .btn-logout {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 40px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .form-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .form-desc {
+            color: #64748b;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #475569;
+            font-weight: 500;
+        }
+        
+        .form-group .required {
+            color: #ef4444;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .radio-group, .checkbox-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-group label, .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: normal;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 16px;
+        }
+        
+        .btn-draft {
+            background: #64748b;
+            margin-top: 8px;
+        }
+        
+        .alert {
+            padding: 10px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .alert-error { background: #fef2f2; color: #dc2626; }
+        .alert-success { background: #f0fdf4; color: #16a34a; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">سامانه <span>آوان</span></div>
+        <div>
+            <span>{{ current_user.get_full_name() }}</span>
+            <a href="/logout" class="btn-logout">خروج</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <a href="/forms" class="back-link">← بازگشت به لیست فرم‌ها</a>
+        
+        <div class="form-container">
+            <div class="form-title">{{ form.title }}</div>
+            <div class="form-desc">{{ form.description or 'لطفاً اطلاعات خواسته شده را با دقت وارد کنید' }}</div>
+            
+            <div id="alertContainer"></div>
+            
+            <form id="mainForm">
+                {% for field in fields %}
+                <div class="form-group" data-field="{{ field.field_name }}" data-type="{{ field.field_type }}">
+                    <label>
+                        {{ field.field_label }}
+                        {% if field.is_required %}<span class="required">*</span>{% endif %}
+                    </label>
+                    
+                    {% if field.field_type == 'text' %}
+                        <input type="text" name="{{ field.field_name }}" class="form-control" 
+                               placeholder="{{ field.placeholder }}" value="{{ field.default_value }}">
+                    
+                    {% elif field.field_type == 'textarea' %}
+                        <textarea name="{{ field.field_name }}" rows="4" placeholder="{{ field.placeholder }}">{{ field.default_value }}</textarea>
+                    
+                    {% elif field.field_type == 'number' %}
+                        <input type="number" name="{{ field.field_name }}" class="form-control" 
+                               placeholder="{{ field.placeholder }}" value="{{ field.default_value }}">
+                    
+                    {% elif field.field_type == 'date' %}
+                        <input type="text" name="{{ field.field_name }}" class="form-control datepicker" 
+                               placeholder="۱۴۰۳/۱۲/۲۵" value="{{ field.default_value }}">
+                    
+                    {% elif field.field_type == 'checkbox' %}
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="{{ field.field_name }}" value="1"> بله</label>
+                        </div>
+                    
+                    {% elif field.field_type == 'radio' %}
+                        <div class="radio-group">
+                            {% for option in field.field_options|default([]) %}
+                            <label><input type="radio" name="{{ field.field_name }}" value="{{ option }}"> {{ option }}</label>
+                            {% endfor %}
+                        </div>
+                    
+                    {% elif field.field_type == 'select' %}
+                        <select name="{{ field.field_name }}">
+                            <option value="">انتخاب کنید...</option>
+                            {% for option in field.field_options|default([]) %}
+                            <option value="{{ option }}">{{ option }}</option>
+                            {% endfor %}
+                        </select>
+                    {% endif %}
+                    
+                    {% if field.is_unique %}
+                    <small style="color:#64748b">⚠️ این فیلد باید یکتا باشد</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <button type="button" class="btn-submit" onclick="submitForm(false)">💾 ثبت فرم</button>
+                <button type="button" class="btn-submit btn-draft" onclick="submitForm(true)">📝 ذخیره به عنوان پیش‌نویس</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function showAlert(msg, type) {
+            const alertDiv = document.getElementById('alertContainer');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+            setTimeout(() => alertDiv.innerHTML = '', 5000);
+        }
+        
+        async function submitForm(isDraft) {
+            const formData = {};
+            const formElements = document.querySelectorAll('#mainForm .form-group');
+            
+            for (let el of formElements) {
+                const fieldName = el.dataset.field;
+                const fieldType = el.dataset.type;
+                let value = null;
+                
+                if (fieldType === 'checkbox') {
+                    const checkbox = el.querySelector('input[type="checkbox"]');
+                    value = checkbox.checked ? '1' : '0';
+                } else if (fieldType === 'radio') {
+                    const selected = el.querySelector('input[type="radio"]:checked');
+                    value = selected ? selected.value : '';
+                } else {
+                    const input = el.querySelector('input, textarea, select');
+                    value = input ? input.value : '';
+                }
+                
+                formData[fieldName] = value;
+            }
+            
+            try {
+                const response = await fetch(`/forms/{{ form.id }}/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ form_data: formData, is_draft: isDraft })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert(result.message, 'success');
+                    if (!isDraft) {
+                        setTimeout(() => window.location.href = '/forms', 1500);
+                    } else {
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch(e) {
+                showAlert('خطا در ارتباط با سرور', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

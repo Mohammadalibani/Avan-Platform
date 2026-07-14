@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">ورود به سامانه - آوان</title>
+    <link rel="icon" type="image/png" href="/favicon.ico" id="dynamicFavicon">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: background 0.5s ease;
+        }
+        
+        .glass-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+            width: 480px;
+            max-width: 90%;
+            padding: 40px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .login-header { text-align: center; margin-bottom: 30px; }
+        
+        .logo-icon {
+            width: auto;
+            height: auto;
+            margin: 0 auto 20px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo-icon img { max-width: 150px; max-height: 80px; width: auto; height: auto; object-fit: contain; }
+        .logo-icon span { font-size: 60px; color: white; }
+        
+        .login-header h2 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .login-header p {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.9rem;
+        }
+        
+        .form-group { margin-bottom: 24px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .glass-input {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+        .glass-input:hover, .glass-input:focus-within {
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.5);
+        }
+        .glass-input .input-icon {
+            padding: 0 16px;
+            font-size: 1.1rem;
+        }
+        .glass-input input {
+            flex: 1;
+            padding: 14px 0;
+            padding-left: 16px;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 1rem;
+            background: transparent;
+            color: white;
+        }
+        .glass-input input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .btn-glass-green {
+            width: 100%;
+            padding: 14px;
+            background: rgba(16, 185, 129, 0.85);
+            backdrop-filter: blur(4px);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .btn-glass-green:hover {
+            background: rgba(16, 185, 129, 1);
+            transform: translateY(-2px);
+        }
+        
+        .back-link { text-align: center; margin-top: 20px; }
+        .back-link a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .back-link a:hover { color: white; }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+        .alert-error { color: #ffcccc; border-right: 3px solid #ff4444; }
+        .alert-success { color: #ccffcc; border-right: 3px solid #44ff44; }
+        
+        .demo-info {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            border-radius: 16px;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.8);
+        }
+        .demo-info strong { color: white; }
+        
+        @media (max-width: 768px) {
+            .glass-container { padding: 30px 24px; }
+            .login-header h2 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container">
+        <div class="login-header">
+            <div class="logo-icon" id="loginLogoIcon">
+                <span>📊</span>
+            </div>
+            <h2 id="loginTitle">ورود به سامانه</h2>
+            <p id="loginSubtitle">مدیریت یکپارچه کارکرد و پیشرفته ورود اطلاعات</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="post">
+            <div class="form-group">
+                <label>کد ملی (10 رقم)</label>
+                <div class="glass-input">
+                    <span class="input-icon">👤</span>
+                    <input type="text" name="username" placeholder="کد ملی خود را وارد کنید" 
+                           required autocomplete="off" 
+                           maxlength="10" 
+                           pattern="[0-9]{10}" 
+                           title="کد ملی باید دقیقاً 10 رقم باشد"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>رمز عبور</label>
+                <div class="glass-input">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" name="password" placeholder="رمز عبور" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-glass-green">
+                 ورود به سامانه
+            </button>
+        </form>
+        
+        <div class="back-link">
+            <a href="/">← بازگشت به صفحه اصلی</a>
+        </div>
+        
+        <div class="demo-info">
+            <p><strong>📌 راهنما:</strong></p>
+            <p>• نام کاربری: کد ملی <strong>10 رقمی</strong></p>
+            <p>• رمز عبور پیش‌فرض: 4 رقم آخر کد ملی</p>
+        </div>
+    </div>
+    
+    <script>
+        async function loadLoginSettings() {
+            try {
+                const res = await fetch('/api/settings/current');
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    if (data.site_title) {
+                        document.getElementById('pageTitle').innerText = data.site_title + ' - ورود';
+                    }
+                    if (data.login_title) {
+                        document.getElementById('loginTitle').innerHTML = data.login_title;
+                    } else if (data.site_title) {
+                        document.getElementById('loginTitle').innerHTML = data.site_title;
+                    }
+                    if (data.login_subtitle) {
+                        document.getElementById('loginSubtitle').innerText = data.login_subtitle;
+                    }
+                    
+                    if (data.login_logo_url && data.login_logo_url !== '/static/uploads/') {
+                        const logoDiv = document.getElementById('loginLogoIcon');
+                        logoDiv.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = data.login_logo_url + '?t=' + Date.now();
+                        img.style.maxWidth = '150px';
+                        img.style.maxHeight = '80px';
+                        img.style.width = 'auto';
+                        img.style.height = 'auto';
+                        img.style.objectFit = 'contain';
+                        logoDiv.appendChild(img);
+                    }
+                    
+                    if (data.login_bg_url && data.login_bg_url !== '/static/uploads/') {
+                        document.body.style.background = `url('${data.login_bg_url}') no-repeat center center fixed`;
+                        document.body.style.backgroundSize = 'cover';
+                    } else if (data.login_bg_gradient && data.login_bg_gradient !== '') {
+                        document.body.style.background = data.login_bg_gradient;
+                    } else {
+                        document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    }
+                    
+                    if (data.favicon_url && data.favicon_url !== '/static/uploads/') {
+                        let favicon = document.querySelector("link[rel*='icon']");
+                        if (!favicon) {
+                            favicon = document.createElement('link');
+                            favicon.rel = 'icon';
+                            document.head.appendChild(favicon);
+                        }
+                        favicon.href = data.favicon_url + '?t=' + Date.now();
+                    }
+                }
+            } catch(e) { console.log(e); }
+        }
+        
+        loadLoginSettings();
+    </script>
+</body>
+</html>

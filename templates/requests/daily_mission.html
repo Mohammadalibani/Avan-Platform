@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>درخواست مأموریت روزانه - سامانه آوان</title>
+    <script src="/static/js/header.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif; background: #f1f5f9; }
+        .main-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 0 32px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #f59e0b, #ea580c); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .logo { font-size: 1.3rem; font-weight: 600; color: white; }
+        .logo span { color: #f59e0b; }
+        .user-area { display: flex; align-items: center; gap: 20px; }
+        .user-info { text-align: left; }
+        .user-name { font-weight: 600; font-size: 0.9rem; color: white; }
+        .user-datetime { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+        .btn-logout {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-logout:hover { background: #ef4444 !important; transform: translateY(-2px); font-weight: 600 !important; }
+        .container { max-width: 700px; margin: 0 auto; padding: 24px; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #475569;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+        }
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .form-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .form-group label .required { color: #ef4444; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .duration-display {
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #1e293b;
+            text-align: center;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.2s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .btn-cancel { background: #64748b; margin-top: 8px; }
+        .alert {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .alert-success { background: #f0fdf4; color: #16a34a; border-right: 4px solid #16a34a; }
+        .alert-error { background: #fef2f2; color: #dc2626; border-right: 4px solid #dc2626; }
+    </style>
+</head>
+<body>
+
+<div class="main-header">
+    <div class="logo-area">
+        <div class="logo-icon">📊</div>
+        <div class="logo">سامانه کارکرد <span>آوان</span></div>
+    </div>
+    <div class="user-area">
+        <div class="user-info">
+            <div class="user-name">{{ current_user.get_full_name() }}</div>
+            <div class="user-datetime" id="userDateTime">📅 در حال بارگذاری...</div>
+        </div>
+        <a href="/logout" class="btn-logout">خروج</a>
+    </div>
+</div>
+
+<div class="container">
+    <a href="/requests" class="back-link">← بازگشت به لیست درخواست‌ها</a>
+    
+    <div class="form-card">
+        <div class="form-title">🚗 درخواست مأموریت روزانه</div>
+        
+        <div id="alertContainer"></div>
+        
+        <form id="dailyMissionForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>نوع مأموریت <span class="required">*</span></label>
+                    <select id="mission_type" required>
+                        <option value="">انتخاب کنید...</option>
+                        <option value="خارج از شهر">خارج از شهر</option>
+                        <option value="داخل شهر">داخل شهر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>وسیله نقلیه</label>
+                    <select id="vehicle">
+                        <option value="">انتخاب کنید...</option>
+                        <option value="هواپیما">هواپیما</option>
+                        <option value="وسیله نقلیه شرکتی">وسیله نقلیه شرکتی</option>
+                        <option value="قطار">قطار</option>
+                        <option value="وسیله نقلیه عمومی">وسیله نقلیه عمومی</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>موضوع مأموریت <span class="required">*</span></label>
+                <input type="text" id="subject" placeholder="موضوع مأموریت" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>مبدأ <span class="required">*</span></label>
+                    <input type="text" id="origin" placeholder="شهر مبدأ" required>
+                </div>
+                <div class="form-group">
+                    <label>مقصد <span class="required">*</span></label>
+                    <input type="text" id="destination" placeholder="شهر مقصد" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>تاریخ رفت <span class="required">*</span></label>
+                    <input type="text" id="departure_date" placeholder="۱۴۰۳/۱۱/۰۱" required>
+                </div>
+                <div class="form-group">
+                    <label>تاریخ برگشت <span class="required">*</span></label>
+                    <input type="text" id="return_date" placeholder="۱۴۰۳/۱۱/۰۵" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>زمان رفت</label>
+                    <input type="time" id="departure_time">
+                </div>
+                <div class="form-group">
+                    <label>زمان برگشت</label>
+                    <input type="time" id="return_time">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>مدت مأموریت (خودکار محاسبه می‌شود)</label>
+                <div class="duration-display" id="duration_display">-- روز</div>
+            </div>
+            
+            <div class="form-group">
+                <label>محل مأموریت</label>
+                <input type="text" id="location" placeholder="آدرس دقیق محل مأموریت">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>مبلغ علی‌الحساب (ریال)</label>
+                    <input type="number" id="advance_amount" placeholder="۰">
+                </div>
+                <div class="form-group">
+                    <label>شماره حکم</label>
+                    <input type="text" id="order_number" placeholder="شماره حکم">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>جزئیات سفر (اختیاری)</label>
+                <textarea id="travel_details" rows="2" placeholder="هتل، محل اقامت، ..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>سایر مسافرین و همراهان</label>
+                <textarea id="passengers" rows="2" placeholder="نام افراد همراه..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>توضیحات تکمیلی</label>
+                <textarea id="description" rows="2" placeholder="توضیحات اضافی..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-submit">📨 ارسال درخواست</button>
+            <button type="button" class="btn-submit btn-cancel" onclick="location.href='/requests'">انصراف</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toPersianNumber(num) {
+        if (num === undefined || num === null) return '۰';
+        const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+        return String(num).replace(/\d/g, x => persianDigits[parseInt(x)]);
+    }
+
+    function showAlert(msg, type) {
+        const container = document.getElementById('alertContainer');
+        container.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+        setTimeout(() => container.innerHTML = '', 3000);
+    }
+
+    function calculateDuration() {
+        const startDate = document.getElementById('departure_date').value;
+        const endDate = document.getElementById('return_date').value;
+        const durationDiv = document.getElementById('duration_display');
+        
+        if (!startDate || !endDate) {
+            durationDiv.innerHTML = '-- روز';
+            return '';
+        }
+        
+        const startParts = startDate.split('/');
+        const endParts = endDate.split('/');
+        
+        if (startParts.length !== 3 || endParts.length !== 3) {
+            durationDiv.innerHTML = 'فرمت تاریخ نامعتبر';
+            return '';
+        }
+        
+        const startYear = parseInt(startParts[0]);
+        const startMonth = parseInt(startParts[1]);
+        const startDay = parseInt(startParts[2]);
+        const endYear = parseInt(endParts[0]);
+        const endMonth = parseInt(endParts[1]);
+        const endDay = parseInt(endParts[2]);
+        
+        if (isNaN(startYear) || isNaN(startMonth) || isNaN(startDay) ||
+            isNaN(endYear) || isNaN(endMonth) || isNaN(endDay)) {
+            durationDiv.innerHTML = 'فرمت تاریخ نامعتبر';
+            return '';
+        }
+        
+        if (endYear < startYear || (endYear === startYear && endMonth < startMonth) ||
+            (endYear === startYear && endMonth === startMonth && endDay < startDay)) {
+            durationDiv.innerHTML = '⚠️ تاریخ برگشت باید بعد از تاریخ رفت باشد';
+            return '';
+        }
+        
+        const monthDays = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
+        let tempYear = startYear;
+        let tempMonth = startMonth;
+        let tempDay = startDay;
+        let days = 0;
+        
+        while (tempYear < endYear || tempMonth < endMonth || tempDay < endDay) {
+            days++;
+            tempDay++;
+            if (tempDay > monthDays[tempMonth - 1]) {
+                tempDay = 1;
+                tempMonth++;
+                if (tempMonth > 12) {
+                    tempMonth = 1;
+                    tempYear++;
+                }
+            }
+        }
+        
+        const duration = days + 1;
+        const durationText = `${toPersianNumber(duration)} روز`;
+        durationDiv.innerHTML = durationText;
+        return durationText;
+    }
+    
+    document.getElementById('departure_date').addEventListener('input', calculateDuration);
+    document.getElementById('return_date').addEventListener('input', calculateDuration);
+    
+    document.getElementById('dailyMissionForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const mission_type = document.getElementById('mission_type').value;
+        const subject = document.getElementById('subject').value.trim();
+        const vehicle = document.getElementById('vehicle').value;
+        const origin = document.getElementById('origin').value.trim();
+        const destination = document.getElementById('destination').value.trim();
+        const departure_date = document.getElementById('departure_date').value.trim();
+        const return_date = document.getElementById('return_date').value.trim();
+        const departure_time = document.getElementById('departure_time').value;
+        const return_time = document.getElementById('return_time').value;
+        const location = document.getElementById('location').value.trim();
+        const advance_amount = document.getElementById('advance_amount').value;
+        const order_number = document.getElementById('order_number').value.trim();
+        const travel_details = document.getElementById('travel_details').value.trim();
+        const passengers = document.getElementById('passengers').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const duration = calculateDuration();
+        
+        if (!mission_type || !subject || !origin || !destination || !departure_date || !return_date) {
+            showAlert('لطفاً تمام فیلدهای الزامی را پر کنید', 'error');
+            return;
+        }
+        
+        if (duration.includes('⚠️')) {
+            showAlert('تاریخ برگشت باید بعد از تاریخ رفت باشد', 'error');
+            return;
+        }
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'در حال ارسال...';
+        
+        try {
+            const res = await fetch('/api/requests/daily-mission/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mission_type: mission_type,
+                    subject: subject,
+                    vehicle: vehicle,
+                    origin: origin,
+                    destination: destination,
+                    departure_date: departure_date,
+                    return_date: return_date,
+                    departure_time: departure_time,
+                    return_time: return_time,
+                    location: location,
+                    advance_amount: advance_amount,
+                    order_number: order_number,
+                    travel_details: travel_details,
+                    passengers: passengers,
+                    description: description,
+                    duration: duration
+                })
+            });
+            
+            const result = await res.json();
+            if (result.success) {
+                showAlert('✅ درخواست مأموریت با موفقیت ثبت شد', 'success');
+                setTimeout(() => {
+                    window.location.href = '/requests';
+                }, 1500);
+            } else {
+                showAlert(result.error, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerText = '📨 ارسال درخواست';
+            }
+        } catch(e) {
+            showAlert('خطا در ارتباط با سرور', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerText = '📨 ارسال درخواست';
+        }
+    });
+    
+    function updateDateTime() {
+        const now = new Date();
+        const persianDate = new Intl.DateTimeFormat('fa-IR', {
+            year: 'numeric', month: 'long', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        }).format(now);
+        const el = document.getElementById('userDateTime');
+        if (el) el.innerHTML = `📅 ${persianDate}`;
+    }
+    
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+</script>
+</body>
+</html>

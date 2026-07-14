@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیام‌ها و تیکت‌ها - سامانه آوان</title>
+    <script src="/static/js/header.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif; background: #f1f5f9; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #475569;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .back-link:hover { background: white; transform: translateX(-4px); }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+        h1 { color: #1e293b; font-size: 1.6rem; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 6px;
+            border-radius: 50px;
+        }
+        .tab-btn {
+            padding: 8px 24px;
+            border: none;
+            background: transparent;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .tab-btn.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-delete { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem; padding: 0 5px; }
+        .messages-list { display: flex; flex-direction: column; gap: 16px; }
+        .message-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-right: 4px solid;
+        }
+        .message-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .message-card.ticket { border-right-color: #f59e0b; }
+        .message-card.message { border-right-color: #3b82f6; }
+        .message-card.closed { border-right-color: #10b981; }
+        /* هایلایت پیام‌های خوانده نشده */
+        .message-card.unread {
+            background: #eff6ff;
+            border-right-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.2);
+        }
+        .message-card.unread:hover { background: #dbeafe; }
+        .message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+        .message-title { font-weight: 700; font-size: 1rem; }
+        .message-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 500; }
+        .badge-ticket { background: #fef3c7; color: #d97706; }
+        .badge-message { background: #dbeafe; color: #2563eb; }
+        .badge-open { background: #fef3c7; color: #d97706; }
+        .badge-closed { background: #dcfce7; color: #16a34a; }
+        .badge-unread { background: #3b82f6; color: white; font-size: 0.6rem; padding: 2px 8px; margin-right: 8px; }
+        .message-meta { display: flex; gap: 16px; font-size: 0.75rem; color: #64748b; margin-bottom: 12px; flex-wrap: wrap; }
+        .message-content { color: #475569; font-size: 0.85rem; line-height: 1.5; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 24px; padding: 28px; width: 550px; max-width: 90%; max-height: 80%; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close-modal { font-size: 28px; cursor: pointer; color: #94a3b8; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; }
+        .replies-list { max-height: 400px; overflow-y: auto; margin: 16px 0; }
+        .reply-item { background: #f8fafc; border-radius: 16px; padding: 12px; margin-bottom: 12px; }
+        .reply-item.admin { background: #e0e7ff; }
+        .reply-header { display: flex; justify-content: space-between; font-size: 0.7rem; color: #64748b; margin-bottom: 8px; }
+        .alert { position: fixed; top: 80px; right: 20px; padding: 12px 20px; border-radius: 12px; z-index: 1000; }
+        .alert-success { background: #f0fdf4; color: #16a34a; }
+        .alert-error { background: #fef2f2; color: #dc2626; }
+        .empty-state { text-align: center; padding: 60px; background: white; border-radius: 24px; color: #64748b; }
+        .action-buttons { display: flex; gap: 10px; margin-top: 16px; }
+        .type-selector { display: flex; gap: 15px; margin-bottom: 16px; padding: 10px; background: #f8fafc; border-radius: 12px; }
+        .type-option { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 16px; border-radius: 30px; transition: all 0.2s; }
+        .type-option.selected { background: #e0e7ff; }
+        .type-option input { margin: 0; }
+        .main-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 0 32px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-icon {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .logo { font-size: 1.3rem; font-weight: 600; color: white; }
+        .logo span { color: #f59e0b; }
+        .user-area { display: flex; align-items: center; gap: 20px; }
+        .user-info { text-align: left; }
+        .user-name { font-weight: 600; font-size: 0.9rem; color: white; }
+        .user-datetime { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+        .btn-logout {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-logout:hover { background: #ef4444 !important; transform: translateY(-2px); font-weight: 600 !important; }
+    </style>
+</head>
+<body>
+<div class="main-header">
+    <div class="logo-area" style="display: flex; align-items: center; gap: 10px;">
+        <div class="logo-icon">📊</div>
+        <div class="logo">سامانه کارکرد <span>آوان</span></div>
+    </div>
+    <div class="user-area" style="display: flex; align-items: center; gap: 20px;">
+        <div class="user-info" style="text-align: left;">
+            <div class="user-name" style="font-weight: 600; font-size: 0.9rem; color: white;">{{ current_user.get_full_name() }}</div>
+            <div class="user-datetime" id="userDateTime" style="font-size: 0.7rem; color: #94a3b8; margin-top: 2px;">📅 در حال بارگذاری...</div>
+        </div>
+        <a href="/logout" class="btn-logout" style="background: rgba(255,255,255,0.1); color: white; padding: 8px 20px; text-decoration: none; border-radius: 40px; font-size: 0.85rem; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.2); display: inline-flex; align-items: center; justify-content: center;">خروج</a>
+    </div>
+</div>
+    
+    <div class="container">
+        <a href="/dashboard" class="back-link">← بازگشت به داشبورد</a>
+        
+        <div class="page-header">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="filterMessages('all')">📬 همه</button>
+                <button class="tab-btn" onclick="filterMessages('ticket')">🎫 تیکت‌ها</button>
+                <button class="tab-btn" onclick="filterMessages('message')">📝 پیام‌ها</button>
+            </div>
+            <button class="btn-primary" onclick="openNewMessageModal()">➕ ارسال جدید</button>
+        </div>
+        
+        <div id="alertContainer"></div>
+        <div class="messages-list" id="messagesList"></div>
+    </div>
+    
+    <div id="newMessageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>ارسال جدید</h3>
+                <span class="close-modal" onclick="closeNewMessageModal()">&times;</span>
+            </div>
+            <form id="newMessageForm">
+                <div class="type-selector">
+                    <label class="type-option ticket" onclick="selectType('ticket')">
+                        <input type="radio" name="messageType" value="ticket" checked> 🎫 تیکت (مشکل، خطا، نیاز به پشتیبانی)
+                    </label>
+                    <label class="type-option message" onclick="selectType('message')">
+                        <input type="radio" name="messageType" value="message"> 📝 پیام عادی (اطلاع رسانی، هماهنگی)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>عنوان</label>
+                    <input type="text" id="messageTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>اولویت</label>
+                    <select id="messagePriority">
+                        <option value="low">کم</option>
+                        <option value="normal" selected>عادی</option>
+                        <option value="high">بالا</option>
+                        <option value="urgent">فوری</option>
+                    </select>
+                </div>
+                {% if current_user.role == 'admin' %}
+                <div class="form-group">
+                    <label>ارسال به</label>
+                    <select id="receiverId" required>
+                        <option value="">انتخاب کنید...</option>
+                    </select>
+                </div>
+                {% endif %}
+                <div class="form-group">
+                    <label>متن</label>
+                    <textarea id="messageText" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%">📨 ارسال</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="viewTitle"></h3>
+                <span class="close-modal" onclick="closeViewModal()">&times;</span>
+            </div>
+            <div id="viewContent"></div>
+            <form id="replyForm">
+                <input type="hidden" id="replyId">
+                <div class="form-group">
+                    <label>پاسخ شما</label>
+                    <textarea id="replyMessage" rows="3" required placeholder="پاسخ خود را وارد کنید..."></textarea>
+                </div>
+                {% if current_user.role == 'admin' %}
+                <div class="form-group">
+                    <label>تغییر وضعیت</label>
+                    <select id="ticketStatus">
+                        <option value="open">باز</option>
+                        <option value="in_progress">در حال بررسی</option>
+                        <option value="closed">بسته شده</option>
+                    </select>
+                </div>
+                {% endif %}
+                <div class="action-buttons">
+                    <button type="submit" class="btn-primary" style="flex:1;">📨 ارسال پاسخ</button>
+                    <button type="button" class="btn-primary" onclick="deleteMessage()" style="flex:0.5; background:#ef4444;">🗑️ حذف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let currentFilter = 'all';
+        let allMessages = [];
+        
+        async function updateInboxBadge() {
+            try {
+                const res = await fetch('/api/tickets');
+                const data = await res.json();
+                let unreadCount = 0;
+                
+                if (data.messages) {
+                    unreadCount = data.messages.filter(m => m.is_unread === true).length;
+                } else if (data.unread_count !== undefined) {
+                    unreadCount = data.unread_count;
+                } else {
+                    unreadCount = data.filter(m => m.is_unread === true).length;
+                }
+                
+                const badgeElement = document.getElementById('inboxBadge');
+                if (badgeElement) {
+                    if (unreadCount > 0) {
+                        badgeElement.innerHTML = `<span class="inbox-badge">${unreadCount > 99 ? '99+' : unreadCount}</span>`;
+                        badgeElement.style.display = 'inline-block';
+                    } else {
+                        badgeElement.innerHTML = '';
+                        badgeElement.style.display = 'none';
+                    }
+                }
+                return unreadCount;
+            } catch(e) {
+                console.error(e);
+                return 0;
+            }
+        }
+        
+        function showAlert(msg, type) {
+            const container = document.getElementById('alertContainer');
+            container.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+            setTimeout(() => container.innerHTML = '', 3000);
+        }
+        
+        function selectType(type) {
+            document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector(`.type-option.${type}`).classList.add('selected');
+        }
+        
+        async function loadMessages() {
+            try {
+                const res = await fetch('/api/tickets');
+                const data = await res.json();
+                allMessages = data.messages || data;
+                renderMessages();
+                await updateInboxBadge();
+            } catch(e) { console.error(e); }
+        }
+        
+        function filterMessages(type) {
+            currentFilter = type;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderMessages();
+        }
+        
+        function renderMessages() {
+            const container = document.getElementById('messagesList');
+            let filtered = [...allMessages];
+            
+            if (currentFilter === 'ticket') {
+                filtered = filtered.filter(m => m.message_type === 'ticket');
+            } else if (currentFilter === 'message') {
+                filtered = filtered.filter(m => m.message_type === 'message');
+            }
+            
+            if (filtered.length === 0) {
+                let emptyText = currentFilter === 'ticket' ? '🎫 هیچ تیکتی ثبت نشده است' : 
+                               (currentFilter === 'message' ? '📝 هیچ پیامی وجود ندارد' : '📭 هیچ پیام یا تیکتی وجود ندارد');
+                container.innerHTML = `<div class="empty-state">${emptyText}</div>`;
+                return;
+            }
+            
+            let html = '';
+            for (const m of filtered) {
+                let statusText = m.status === 'open' ? 'باز' : (m.status === 'in_progress' ? 'در حال بررسی' : 'بسته شده');
+                let typeText = m.message_type === 'ticket' ? '🎫 تیکت' : '📝 پیام';
+                let typeClass = m.message_type === 'ticket' ? 'ticket' : 'message';
+                let priorityIcon = m.priority === 'low' ? '🟢' : (m.priority === 'normal' ? '🔵' : (m.priority === 'high' ? '🟠' : '🔴'));
+                
+                // ✅ استفاده از is_unread که از سرور میاد
+                const isUnread = (m.is_unread === true);
+                const unreadClass = isUnread ? 'unread' : '';
+                const unreadBadge = isUnread ? '<span class="badge-unread">جدید</span>' : '';
+                
+                html += `
+                    <div class="message-card ${typeClass} ${unreadClass} ${m.status}" onclick="viewMessage(${m.id})">
+                        <div class="message-header">
+                            <div class="message-title">
+                                <span class="message-badge badge-${typeClass}">${typeText}</span>
+                                ${escapeHtml(m.title)} ${priorityIcon} ${unreadBadge}
+                            </div>
+                            <div>
+                                <span class="message-badge badge-${m.status === 'closed' ? 'closed' : 'open'}">${statusText}</span>
+                                <button class="btn-delete" onclick="event.stopPropagation(); deleteMessage(${m.id})" title="حذف">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span>👤 از: ${escapeHtml(m.sender_name)}</span>
+                            <span>📧 به: ${escapeHtml(m.receiver_name)}</span>
+                            <span>📅 ${m.created_at}</span>
+                            <span>💬 ${m.reply_count} پاسخ</span>
+                        </div>
+                        <div class="message-content">${escapeHtml(m.message.substring(0, 100))}${m.message.length > 100 ? '...' : ''}</div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+async function viewMessage(id) {
+    try {
+        const res = await fetch(`/api/tickets/${id}`);
+        const msg = await res.json();
+        document.getElementById('viewTitle').innerHTML = `${msg.message_type === 'ticket' ? '🎫 تیکت' : '📝 پیام'} - ${escapeHtml(msg.title)}`;
+        document.getElementById('replyId').value = id;
+        if (document.getElementById('ticketStatus')) {
+            document.getElementById('ticketStatus').value = msg.status;
+        }
+        let repliesHtml = '<div class="replies-list">';
+        repliesHtml += `
+            <div class="reply-item">
+                <div class="reply-header"><span>👤 ${escapeHtml(msg.sender_name)}</span><span>📅 ${msg.created_at}</span></div>
+                <div class="reply-message">${escapeHtml(msg.message)}</div>
+            </div>
+        `;
+        for (const reply of msg.replies) {
+            repliesHtml += `
+                <div class="reply-item ${reply.is_admin_reply ? 'admin' : ''}">
+                    <div class="reply-header"><span>${reply.is_admin_reply ? '👨‍💼 پاسخ ادمین' : `👤 ${escapeHtml(reply.user_name)}`}</span><span>📅 ${reply.created_at}</span></div>
+                    <div class="reply-message">${escapeHtml(reply.message)}</div>
+                </div>
+            `;
+        }
+        repliesHtml += '</div>';
+        document.getElementById('viewContent').innerHTML = repliesHtml;
+        document.getElementById('viewModal').classList.add('active');
+        
+        // ========== مهم: بعد از باز کردن پیام، دوباره لیست رو لود کن تا هایلایت از بین بره ==========
+        await loadMessages();
+        
+    } catch(e) { showAlert('خطا در دریافت اطلاعات', 'error'); }
+}
+        
+async function deleteMessage(id = null) {
+    const msgId = id || document.getElementById('replyId')?.value;
+    if (!msgId) return;
+    if (!confirm('آیا از حذف این مورد مطمئن هستید؟')) return;
+    
+    try {
+        const res = await fetch(`/api/tickets/${msgId}/delete`, { method: 'DELETE' });
+        const result = await res.json();
+        if (result.success) {
+            showAlert('با موفقیت حذف شد', 'success');
+            closeViewModal();
+            window.location.reload();
+        } else {
+            showAlert(result.error, 'error');
+        }
+    } catch(e) { showAlert('خطا در حذف', 'error'); }
+}
+        
+        function openNewMessageModal() {
+            document.getElementById('messageTitle').value = '';
+            document.getElementById('messagePriority').value = 'normal';
+            document.getElementById('messageText').value = '';
+            document.querySelector('input[name="messageType"][value="ticket"]').checked = true;
+            selectType('ticket');
+            if (document.getElementById('receiverId')) {
+                document.getElementById('receiverId').value = '';
+                loadUsers();
+            }
+            document.getElementById('newMessageModal').classList.add('active');
+        }
+        
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/tickets/users');
+                const users = await res.json();
+                const select = document.getElementById('receiverId');
+                select.innerHTML = '<option value="">انتخاب کنید...</option>';
+                for (const u of users) {
+                    select.innerHTML += `<option value="${u.id}">${u.name} (${u.role})</option>`;
+                }
+            } catch(e) { console.error(e); }
+        }
+        
+        function closeNewMessageModal() { document.getElementById('newMessageModal').classList.remove('active'); }
+        function closeViewModal() { document.getElementById('viewModal').classList.remove('active'); }
+        
+        document.getElementById('newMessageForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const messageType = document.querySelector('input[name="messageType"]:checked').value;
+            const data = {
+                title: document.getElementById('messageTitle').value,
+                priority: document.getElementById('messagePriority').value,
+                message: document.getElementById('messageText').value,
+                message_type: messageType
+            };
+            if ('{{ current_user.role }}' === 'admin') {
+                data.receiver_id = document.getElementById('receiverId').value;
+            }
+            try {
+                const res = await fetch('/api/tickets/create', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showAlert(messageType === 'ticket' ? 'تیکت با موفقیت ارسال شد' : 'پیام با موفقیت ارسال شد', 'success');
+                    closeNewMessageModal();
+                    await loadMessages();
+                } else { showAlert(result.error, 'error'); }
+            } catch(e) { showAlert('خطا در ارسال', 'error'); }
+        });
+        
+document.getElementById('replyForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('replyId').value;
+    const message = document.getElementById('replyMessage').value;
+    const status = document.getElementById('ticketStatus') ? document.getElementById('ticketStatus').value : null;
+    const data = { message: message };
+    if (status) data.status = status;
+    
+    const sendBtn = e.target.querySelector('button[type="submit"]');
+    if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.innerText = 'در حال ارسال...';
+    }
+    
+    try {
+        const res = await fetch(`/api/tickets/${id}/reply`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (result.success) {
+            showAlert('پاسخ با موفقیت ارسال شد', 'success');
+            closeViewModal();
+            // ========== رفرش کامل صفحه ==========
+            window.location.reload();
+        } else {
+            showAlert(result.error, 'error');
+        }
+    } catch(e) { 
+        showAlert('خطا در ارسال پاسخ', 'error'); 
+    } finally {
+        if (sendBtn) {
+            sendBtn.disabled = false;
+            sendBtn.innerText = '📨 ارسال پاسخ';
+        }
+    }
+});
+        
+        document.getElementById('newMessageModal').addEventListener('click', function(e) { if (e.target === this) closeNewMessageModal(); });
+        document.getElementById('viewModal').addEventListener('click', function(e) { if (e.target === this) closeViewModal(); });
+        
+        loadMessages();
+        setInterval(loadMessages, 30000);
+    </script>
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const persianDate = new Intl.DateTimeFormat('fa-IR', { 
+                year: 'numeric', month: 'long', day: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            }).format(now);
+            const el = document.getElementById('userDateTime');
+            if (el) el.innerHTML = `📅 ${persianDate}`;
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+    </script>
+</body>
+</html>
