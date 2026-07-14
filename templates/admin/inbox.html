@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صندوق پیام - سامانه کارکرد آوان</title>
+    <script src="/static/js/header.js"></script>
+	<style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+            background: linear-gradient(135deg, #e8ecf2 0%, #dce2ea 100%);
+            min-height: 100vh;
+        }
+        .main-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 0 32px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-icon {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .logo-text { font-size: 1.3rem; font-weight: 700; }
+        .logo-text span { color: #fbbf24; }
+        .btn-back {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.3); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 32px; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.6rem; color: #1e293b; }
+        .messages-list { display: flex; flex-direction: column; gap: 16px; }
+        .message-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-right: 4px solid;
+        }
+        .message-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15); }
+        .message-card.unread { border-right-color: #3b82f6; background: #eff6ff; }
+        .message-card.read { border-right-color: #cbd5e1; }
+        .message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .message-title { font-weight: 700; font-size: 1rem; }
+        .message-meta { font-size: 0.7rem; color: #64748b; margin-bottom: 10px; display: flex; gap: 16px; flex-wrap: wrap; }
+        .message-content { color: #475569; font-size: 0.85rem; line-height: 1.5; }
+        .empty-state { text-align: center; padding: 60px; background: white; border-radius: 24px; color: #64748b; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            padding: 0;
+            width: 550px;
+            max-width: 90%;
+            max-height: 85vh;
+            overflow: hidden;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .modal-body { padding: 24px; max-height: calc(85vh - 140px); overflow-y: auto; }
+        .close-modal { font-size: 28px; cursor: pointer; color: white; opacity: 0.8; }
+        .reply-form { margin-top: 20px; padding-top: 20px; border-top: 2px solid #e2e8f0; }
+        .reply-form textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 16px; font-family: inherit; resize: vertical; }
+        .btn-send {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .btn-send:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+    /* منوی همبرگری */
+.side-menu {
+    position: fixed; top: 0; right: -320px; width: 320px; height: 100vh;
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    z-index: 1000; transition: right 0.3s ease; overflow-y: auto;
+}
+.side-menu.open { right: 0; }
+.menu-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 999; display: none; backdrop-filter: blur(4px);
+}
+.menu-overlay.active { display: block; }
+.menu-header { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+.menu-header h3 { color: white; }
+.close-menu { background: rgba(255,255,255,0.1); border: none; color: white; font-size: 24px; cursor: pointer; width: 36px; height: 36px; border-radius: 10px; }
+.menu-links a { display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.3s; }
+.menu-links a:hover { background: rgba(255,255,255,0.1); color: white; padding-right: 30px; }
+.menu-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 12px 20px; }
+.menu-section-title { padding: 8px 24px; color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; }
+.hamburger-btn { background: rgba(255,255,255,0.1); border: none; color: white; font-size: 28px; cursor: pointer; width: 45px; height: 45px; border-radius: 12px; }
+.hamburger-btn:hover { background: rgba(255,255,255,0.25); }
+
+	</style>
+</head>
+<body>
+<!-- منوی همبرگری -->
+<div class="side-menu" id="sideMenu">
+    <div class="menu-header"><h3>📋 منوی مدیریت</h3><button class="close-menu" onclick="closeSideMenu()">✕</button></div>
+    <div class="menu-links">
+        <div class="menu-section-title">🏠 اصلی</div>
+        <a href="/admin/dashboard">📊 داشبورد مدیریت</a>
+        <a href="/admin/users">👥 مدیریت کاربران</a>
+        <a href="/admin/departments">🏢 مدیریت ادارات</a>
+        <a href="/admin/units">📁 مدیریت واحدها</a>
+        <a href="/admin/personnel">👨‍💼 مدیریت پرسنل</a>
+        <a href="/admin/periods">📅 دوره‌های کارکرد</a>
+        <a href="/admin/fields">⚙️ مدیریت فیلدها</a>
+        <a href="/admin/approvals">✅ درخواست‌های تایید</a>
+        <a href="/admin/excel-template">📊 قالب گزارش اکسل</a>
+        <a href="/admin/settings">🔧 تنظیمات سامانه</a>
+        <div class="menu-divider"></div>
+        <div class="menu-section-title">👑 پیش‌نمایش</div>
+        <a href="/admin/org-manager-preview">🏢 مدیر سازمان</a>
+        <a href="/admin/dept-manager-preview">📁 مدیر اداره</a>
+        <a href="/admin/unit-supervisor-preview">👥 سرپرست واحد</a>
+        <div class="menu-divider"></div>
+        <div class="menu-section-title">📬 ارتباطات</div>
+        <a href="/tickets">🎫 تیکت‌ها و پیام‌ها</a>
+    </div>
+</div>
+<div class="menu-overlay" id="menuOverlay" onclick="closeSideMenu()"></div>
+
+<div class="main-header">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <button class="hamburger-btn" onclick="openSideMenu()">☰</button>
+        <div class="logo-area" style="display: flex; align-items: center; gap: 10px;">
+            <div class="logo-icon">📬</div>
+			<div class="logo-icon">📊</div>
+            <div class="logo">سامانه کارکرد <span>آوان</span></div>
+        </div>
+    </div>
+        <a href="/admin/dashboard" class="btn-back">← بازگشت به داشبورد</a>
+    </div>
+    <div class="container">
+        <div class="page-header"><h1>📬 صندوق پیام</h1></div>
+        <div class="messages-list" id="messagesList"></div>
+    </div>
+    <div id="replyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>📨 مشاهده و پاسخ</h3><span class="close-modal" onclick="closeModal()">&times;</span></div>
+            <div class="modal-body">
+                <div id="replyContent"></div>
+                <div class="reply-form">
+                    <textarea id="replyText" rows="3" placeholder="پاسخ خود را بنویسید..."></textarea>
+                    <button class="btn-send" onclick="sendReply()">📤 ارسال پاسخ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let currentMessageId = null;
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+        }
+        
+        async function loadMessages() {
+            try {
+                const res = await fetch('/admin/api/inbox');
+                const messages = await res.json();
+                const container = document.getElementById('messagesList');
+                if (!messages.length) {
+                    container.innerHTML = '<div class="empty-state">📭 صندوق پیام شما خالی است</div>';
+                    return;
+                }
+                let html = '';
+                for (const m of messages) {
+                    const unreadClass = !m.is_read ? 'unread' : 'read';
+                    html += `<div class="message-card ${unreadClass}" onclick="viewMessage(${m.id})">
+                                <div class="message-header">
+                                    <div class="message-title">${escapeHtml(m.title)}</div>
+                                </div>
+                                <div class="message-meta">
+                                    <span>👤 از: ${escapeHtml(m.sender_name)}</span>
+                                    <span>📅 ${m.created_at}</span>
+                                </div>
+                                <div class="message-content">${escapeHtml(m.message.substring(0, 150))}${m.message.length > 150 ? '...' : ''}</div>
+                            </div>`;
+                }
+                container.innerHTML = html;
+            } catch(e) { 
+                console.error(e);
+                document.getElementById('messagesList').innerHTML = '<div class="empty-state">❌ خطا در بارگذاری پیام‌ها</div>';
+            }
+        }
+        
+        async function viewMessage(id) {
+            try {
+                const res = await fetch(`/admin/api/message/${id}`);
+                const message = await res.json();
+                if (message.error) {
+                    alert(message.error);
+                    return;
+                }
+                currentMessageId = id;
+                let repliesHtml = '';
+                if (message.replies && message.replies.length) {
+                    for (const r of message.replies) {
+                        repliesHtml += `<div style="margin-bottom:12px; padding:12px; background:#f8fafc; border-radius:12px;">
+                                            <div style="font-size:0.7rem; color:#667eea;">${escapeHtml(r.user_name)} - ${r.created_at}</div>
+                                            <div style="margin-top:6px;">${escapeHtml(r.message)}</div>
+                                        </div>`;
+                    }
+                }
+                document.getElementById('replyContent').innerHTML = `
+                    <div style="font-weight:600; margin-bottom:8px;">${escapeHtml(message.title)}</div>
+                    <div style="margin-bottom:16px; padding:12px; background:#f1f5f9; border-radius:12px;">${escapeHtml(message.message)}</div>
+                    ${repliesHtml ? `<div style="margin-top:12px;"><strong>پاسخ‌ها:</strong></div>${repliesHtml}` : ''}
+                `;
+                document.getElementById('replyText').value = '';
+                document.getElementById('replyModal').classList.add('active');
+                await fetch(`/admin/api/message/${id}/read`, { method: 'POST' });
+                loadMessages();
+            } catch(e) { 
+                console.error(e);
+                alert('خطا در دریافت اطلاعات');
+            }
+        }
+        
+        async function sendReply() {
+            const msg = document.getElementById('replyText').value.trim();
+            if (!msg) {
+                alert('لطفاً متن پاسخ را وارد کنید');
+                return;
+            }
+            try {
+                const res = await fetch(`/admin/api/message/${currentMessageId}/reply`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ message: msg }) 
+                });
+                const result = await res.json();
+                if (result.success) {
+                    closeModal();
+                    loadMessages();
+                    alert('پاسخ با موفقیت ارسال شد');
+                } else {
+                    alert(result.error);
+                }
+            } catch(e) { 
+                console.error(e);
+                alert('خطا در ارسال پاسخ');
+            }
+        }
+        
+        function closeModal() { 
+            document.getElementById('replyModal').classList.remove('active'); 
+        }
+        
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+        
+        loadMessages();
+    </script>
+</body>
+</html>
