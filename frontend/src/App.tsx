@@ -5,9 +5,8 @@ import { useAuthStore } from './stores/authStore';
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 import UserList from './pages/users/UserList';
-import PersonnelList from './pages/personnel/PersonnelList';
-import DepartmentList from './pages/departments/DepartmentList';
 import Header from './components/layout/Header';
+import PersonnelList from './pages/personnel/PersonnelList';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuthStore();
@@ -31,10 +30,7 @@ function App() {
     <BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
-        {/* مسیر لاگین */}
         <Route path="/login" element={<Login />} />
-        
-        {/* مسیر داشبورد */}
         <Route
           path="/dashboard"
           element={
@@ -45,8 +41,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
-        {/* ✅ مدیریت کاربران */}
         <Route
           path="/admin/users"
           element={
@@ -57,37 +51,20 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
-        {/* ✅ مدیریت پرسنل */}
-        <Route
-          path="/admin/personnel"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <PersonnelList />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        
-        {/* ✅ مدیریت ادارات */}
-        <Route
-          path="/admin/departments"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <DepartmentList />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        
-        {/* ریدایرکت‌ها */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
+<Route
+  path="/admin/personnel"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <PersonnelList />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
 export default App;
