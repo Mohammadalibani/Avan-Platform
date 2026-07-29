@@ -1,0 +1,67 @@
+{
+  "name": "avan-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@ant-design/icons": "^6.3.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@fortawesome/fontawesome-free": "^7.3.1",
+    "@mui/icons-material": "^5.15.10",
+    "@mui/material": "^5.15.10",
+    "@tanstack/react-query": "^5.101.4",
+    "antd": "^6.5.2",
+    "axios": "^1.6.8",
+    "dayjs": "^1.11.21",
+    "echarts": "^5.4.3",
+    "echarts-for-react": "^3.0.2",
+    "jalaliday": "^3.1.1",
+    "jwt-decode": "^4.0.0",
+    "moment": "^2.30.1",
+    "moment-jalaali": "^0.10.4",
+    "react": "^18.2.0",
+    "react-date-object": "^2.1.9",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.51.3",
+    "react-hot-toast": "^2.4.1",
+    "react-multi-date-picker": "^4.5.2",
+    "react-router-dom": "^6.22.3",
+    "react-scripts": "5.0.1",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/moment-jalaali": "^0.7.9",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "ajv": "^8.12.0",
+    "ajv-keywords": "^5.1.0",
+    "schema-utils": "^4.2.0",
+    "typescript": "^4.9.5",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "proxy": "http://10.86.109.205:5000"
+}
